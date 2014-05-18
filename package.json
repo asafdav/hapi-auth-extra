@@ -27,7 +27,8 @@
   "homepage": "https://github.com/asafdav/hapi-auth-extra",
   "dependencies": {
     "hapi": "^4.1.4",
-    "hoek": "^2.1.0"
+    "hoek": "^2.1.0",
+    "joi": "^3.1.0"
   },
   "devDependencies": {
     "chai": "^1.9.1",
