@@ -7,4 +7,4 @@ test-cov: lib-cov
 lib-cov:
 	@node node_modules/jscoverage/bin/jscoverage lib lib-cov
 
-.PHONY: test test-cov
+.PHONY: test
