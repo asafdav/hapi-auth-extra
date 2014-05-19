@@ -55,10 +55,10 @@ describe('hapiAuthExtra', function() {
         //expect(server.pack.start).to.throw(/extra-auth can be enabled only for secured route/);
         server.pack.start(function(err) {
           expect(err).to.not.be.undefined;
-          expect(err).to.match(/the key bla is not allowed/);
+          expect(err).to.match(/bla is not allowed/);
           server.pack.stop(); // Make sure the server is stopped
+          done();
         });
-        done();
       });
     });
 
@@ -87,9 +87,10 @@ describe('hapiAuthExtra', function() {
       }});
       server.pack.register(PluginObject, {}, function(err) {
         server.inject({method: 'GET', url: '/', credentials: {role: 'USER'}}, function(res) {
-          expect(res.statusCode).to.equal(401);
-          expect(res.result.message).to.equal("Unauthorized");
-          done();
+          internals.asyncCheck(function() {
+            expect(res.statusCode).to.equal(401);
+            expect(res.result.message).to.equal("Unauthorized");
+          }, done);
         });
       });
     });
@@ -106,14 +107,15 @@ describe('hapiAuthExtra', function() {
       }});
       server.pack.register(PluginObject, {}, function(err) {
         server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN'}}, function(res) {
-          expect(res.payload).to.equal('Authorized');
-          done();
+          internals.asyncCheck(function() {
+            expect(res.payload).to.equal('Authorized');
+          }, done);
         });
       });
     });
   });
 
-  describe('fetch ACL entities', function() {
+  describe('fetchEntity', function() {
     it('validates that the aclQuery parameter is a function', function(done) {
       var server = new Hapi.Server();
       server.auth.scheme('custom', internals.authSchema);
@@ -126,9 +128,10 @@ describe('hapiAuthExtra', function() {
       }});
       server.pack.register(PluginObject, {}, function(err) {
         server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN'}}, function(res) {
-          expect(res.statusCode).to.equal(400)
-          expect(res.result.message).to.match(/the value of aclQuery must be a Function/);
-          done();
+          internals.asyncCheck(function() {
+            expect(res.statusCode).to.equal(400)
+            expect(res.result.message).to.match(/aclQuery must be a Function/);
+          }, done);
         });
       });
     });
@@ -147,9 +150,10 @@ describe('hapiAuthExtra', function() {
       }});
       server.pack.register(PluginObject, {}, function(err) {
         server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN'}}, function(res) {
-          expect(res.statusCode).to.equal(200);
-          expect(res.result.name).to.equal('Asaf');
-          done();
+          internals.asyncCheck(function() {
+            expect(res.statusCode).to.equal(200);
+            expect(res.result.name).to.equal('Asaf');
+          }, done);
         });
       });
     });
@@ -168,8 +172,9 @@ describe('hapiAuthExtra', function() {
       }});
       server.pack.register(PluginObject, {}, function(err) {
         server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN'}}, function(res) {
-          expect(res.statusCode).to.equal(404);
-          done();
+          internals.asyncCheck(function() {
+            expect(res.statusCode).to.equal(404);
+          }, done);
         });
       });
     });
@@ -188,12 +193,132 @@ describe('hapiAuthExtra', function() {
       }});
       server.pack.register(PluginObject, {}, function(err) {
         server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN'}}, function(res) {
-          expect(res.statusCode).to.equal(500);
-          done();
+          internals.asyncCheck(function() {
+            expect(res.statusCode).to.equal(500);
+          }, done);
         });
       });
     });
-  })
+  });
+
+  describe('validateEntityAcl', function() {
+    it('requires aclQuery when validateEntityAcl is true', function(done) {
+      var server = new Hapi.Server();
+      server.auth.scheme('custom', internals.authSchema);
+      server.auth.strategy('default', 'custom', true, {});
+
+      server.route({ method: 'GET', path: '/', config: {
+        auth: true,
+        plugins: {'hapiAuthExtra': {validateEntityAcl: true}},
+        handler: function (request, reply) { reply("Authorized");}
+      }});
+      server.pack.register(PluginObject, {}, function(err) {
+        server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN'}}, function(res) {
+          internals.asyncCheck(function() {
+            expect(res.statusCode).to.equal(400);
+            expect(res.result.message).to.match(/aclQuery is required/);
+          }, done);
+        });
+      });
+    });
+
+    it('returns an error when the entity was not found', function(done) {
+      var server = new Hapi.Server();
+      server.auth.scheme('custom', internals.authSchema);
+      server.auth.strategy('default', 'custom', true, {});
+
+      server.route({ method: 'GET', path: '/', config: {
+        auth: true,
+        plugins: {'hapiAuthExtra': {
+          validateEntityAcl: true,
+          aclQuery: function(id, cb) {
+            cb(null, null);
+          }
+        }},
+        handler: function (request, reply) { reply("Authorized");}
+      }});
+      server.pack.register(PluginObject, {}, function(err) {
+        server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN'}}, function(res) {
+          internals.asyncCheck(function() {
+            expect(res.statusCode).to.equal(404);
+          }, done);
+        });
+      });
+    });
+
+    it('declines requests from unauthorized users', function(done) {
+      var server = new Hapi.Server();
+      server.auth.scheme('custom', internals.authSchema);
+      server.auth.strategy('default', 'custom', true, {});
+
+      server.route({ method: 'GET', path: '/', config: {
+        auth: true,
+        plugins: {'hapiAuthExtra': {
+          validateEntityAcl: true,
+          aclQuery: function(id, cb) {
+            cb(null, {id: id, name: 'Hello', isGranted: function(user, role, cb) {cb(null, false)}});
+          }
+        }},
+        handler: function (request, reply) { reply("Authorized");}
+      }});
+      server.pack.register(PluginObject, {}, function(err) {
+        server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN'}}, function(res) {
+          internals.asyncCheck(function() {
+            expect(res.statusCode).to.equal(401);
+          }, done);
+        });
+      });
+    });
+
+    it('handles validator errors', function(done) {
+      var server = new Hapi.Server();
+      server.auth.scheme('custom', internals.authSchema);
+      server.auth.strategy('default', 'custom', true, {});
+
+      server.route({ method: 'GET', path: '/', config: {
+        auth: true,
+        plugins: {'hapiAuthExtra': {
+          validateEntityAcl: true,
+          aclQuery: function(id, cb) {
+            cb(null, {id: id, name: 'Hello', isGranted: function(user, role, cb) {cb(new Error('Boom'))}});
+          }
+        }},
+        handler: function (request, reply) { reply("Authorized");}
+      }});
+      server.pack.register(PluginObject, {}, function(err) {
+        server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN'}}, function(res) {
+          internals.asyncCheck(function() {
+            expect(res.statusCode).to.equal(500);
+          }, done);
+        });
+      });
+    });
+
+    it('returns the response for authorized users', function(done) {
+      var server = new Hapi.Server();
+      server.auth.scheme('custom', internals.authSchema);
+      server.auth.strategy('default', 'custom', true, {});
+
+      server.route({ method: 'GET', path: '/', config: {
+        auth: true,
+        plugins: {'hapiAuthExtra': {
+          validateEntityAcl: true,
+          aclQuery: function(id, cb) {
+            cb(null, {id: id, name: 'Hello', isGranted: function(user, role, cb) {cb(null, true)}});
+          }
+        }},
+        handler: function (request, reply) { reply(request.plugins.hapiAuthExtra.entity);}
+      }});
+      server.pack.register(PluginObject, {}, function(err) {
+        server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN'}}, function(res) {
+          internals.asyncCheck(function() {
+            expect(res.statusCode).to.equal(200);
+            expect(res.result.name).to.equal('Hello');
+          }, done);
+        });
+      });
+    });
+  });
 
 });
 
@@ -213,4 +338,13 @@ internals.authSchema = function() {
   };
 
 return scheme;
+}
+
+internals.asyncCheck = function(f, done ) {
+  try {
+    f();
+    done();
+  } catch(e) {
+    done(e);
+  }
 }
