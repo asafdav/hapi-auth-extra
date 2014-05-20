@@ -27,7 +27,7 @@ server.route({ method: 'GET', path: '/', config: {
 }});
 ```
 
-** Note: ** every route that uses hapiAuthExtra must be protected by an authentication schema (auth: true).
+**Note:** every route that uses hapiAuthExtra must be protected by an authentication schema (auth: true).
 
 supported parameters: 
 --------------------
@@ -37,3 +37,8 @@ supported parameters:
 * paramSource: String: The source of the acl parameter, allowed values: payload, params, query.
 * validateEntityAcl: Boolean: Should the plugin validate if the user has access to the entity. if true, validateAclMethod is required. 
 * validateAclMethod: String: A function name. the plugin will invoke this method on the provided entity and will use it to verify that the user has permissions to access this entity. function signature is function(user, role, cb);
+
+
+### TODO
+* Write an example (For now, see the tests for more information)
+* Add output filtering
