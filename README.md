@@ -27,7 +27,7 @@ server.route({ method: 'GET', path: '/', config: {
 }});
 ```
 
-** Note: ** every route that uses hapiAuthExtra must be protected by an authentication schema (auth: true).
+**Note:** every route that uses hapiAuthExtra must be protected by an authentication schema (auth: true).
 
 supported parameters: 
 --------------------
