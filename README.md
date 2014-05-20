@@ -7,7 +7,7 @@ Additional authentication toolbox for HapiJS.
 
 It includes: 
 * ACL support
-* Authentication strategy for API's (Token based)
+* Authentication strategy for APIs (Token based)
 
 How to use it:
 --------------

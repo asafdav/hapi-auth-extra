@@ -338,7 +338,7 @@ internals.authSchema = function() {
   };
 
 return scheme;
-}
+};
 
 internals.asyncCheck = function(f, done ) {
   try {
