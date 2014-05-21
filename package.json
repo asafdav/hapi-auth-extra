@@ -28,7 +28,7 @@
   "dependencies": {
     "hapi": "^4.1.4",
     "hoek": "^2.1.0",
-    "joi": "git://github.com/asafdav/joi",
+    "joi": "git://github.com/spumko/joi",
     "q": "^1.0.1"
   },
   "devDependencies": {
