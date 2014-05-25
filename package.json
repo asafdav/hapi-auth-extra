@@ -1,6 +1,6 @@
 {
   "name": "hapi-auth-extra",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Additional auth toolbox for HapiJS including ACL support",
   "main": "index.js",
   "scripts": {

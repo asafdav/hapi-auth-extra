@@ -12,7 +12,34 @@ It includes:
 How to use it:
 --------------
 
-### Token authentication 
+### Token authentication
+
+This plugin provides an easy way to implement token based authentication, it could be a good solution for internal APIs, for external APIs please consider using oAuth instead.
+All you have to do is to provide a method that validates a token and returns the related user in case the token is valid. In order to use this feature,
+you need to register the plugin and enable 'auth-token' authentication schema that the plugin provides.
+
+Example:
+```javascript
+function validateToken(token, cb) {
+  return cb(null, {_id: '123', name: 'Test User'});
+}
+
+var server = Hapi.createServer(0);
+server.pack.register('hapi-auth-extra', {
+  tokenAuth: {
+    tokenValidator: validateToken
+  }
+}, function(err) {
+
+  server.route({ method: 'GET', path: '/', config: {
+    auth: true,
+    handler: function (request, reply) { reply("Authorized");}
+  }});
+
+  server.auth.strategy('default', 'auth-token');
+});
+```
+
 
 ### ACL
 You can use this plugin to add ACL and protect your routes. you can configure required roles and allow access to certain endpoints only to specific users.
