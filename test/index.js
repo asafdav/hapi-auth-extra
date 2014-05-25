@@ -255,6 +255,7 @@ describe('hapiAuthExtra', function() {
         auth: true,
         plugins: {'hapiAuthExtra': {
           validateEntityAcl: true,
+          validateAclMethod: 'isGranted',
           aclQuery: function(id, cb) {
             cb(null, {id: id, name: 'Hello', isGranted: function(user, role, cb) {cb(null, false)}});
           }
@@ -279,6 +280,7 @@ describe('hapiAuthExtra', function() {
         auth: true,
         plugins: {'hapiAuthExtra': {
           validateEntityAcl: true,
+          validateAclMethod: 'isGranted',
           aclQuery: function(id, cb) {
             cb(null, {id: id, name: 'Hello', isGranted: function(user, role, cb) {cb(new Error('Boom'))}});
           }
@@ -303,11 +305,14 @@ describe('hapiAuthExtra', function() {
         auth: true,
         plugins: {'hapiAuthExtra': {
           validateEntityAcl: true,
+          validateAclMethod: 'isGranted',
           aclQuery: function(id, cb) {
             cb(null, {id: id, name: 'Hello', isGranted: function(user, role, cb) {cb(null, true)}});
           }
         }},
-        handler: function (request, reply) { reply(request.plugins.hapiAuthExtra.entity);}
+        handler: function (request, reply) {
+          reply(request.plugins.hapiAuthExtra.entity);
+        }
       }});
       server.pack.register(PluginObject, {}, function(err) {
         server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN'}}, function(res) {
@@ -320,6 +325,136 @@ describe('hapiAuthExtra', function() {
     });
   });
 
+});
+
+describe('default acl validator', function() {
+
+  it('returns error when the entity has no user field', function(done) {
+    var server = new Hapi.Server();
+    server.auth.scheme('custom', internals.authSchema);
+    server.auth.strategy('default', 'custom', true, {});
+
+    server.route({ method: 'GET', path: '/', config: {
+      auth: true,
+      plugins: {'hapiAuthExtra': {
+        validateEntityAcl: true,
+        aclQuery: function(id, cb) {
+          cb(null, {id: id, name: 'Hello'});
+        }
+      }},
+      handler: function (request, reply) { reply("Authorized");}
+    }});
+    server.pack.register(PluginObject, {}, function(err) {
+      server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN'}}, function(res) {
+        internals.asyncCheck(function() {
+          expect(res.statusCode).to.equal(401);
+          expect(res.result.message).to.equal("Unauthorized");
+        }, done);
+      });
+    });
+  });
+
+  it('returns error when the entity doesn\'t belong to the authenticated user', function(done) {
+    var server = new Hapi.Server();
+    server.auth.scheme('custom', internals.authSchema);
+    server.auth.strategy('default', 'custom', true, {});
+
+    server.route({ method: 'GET', path: '/', config: {
+      auth: true,
+      plugins: {'hapiAuthExtra': {
+        validateEntityAcl: true,
+        aclQuery: function(id, cb) {
+          cb(null, {_user: '1', name: 'Hello'});
+        }
+      }},
+      handler: function (request, reply) { reply("Authorized");}
+    }});
+    server.pack.register(PluginObject, {}, function(err) {
+      server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN', _id: '2'}}, function(res) {
+        internals.asyncCheck(function() {
+          expect(res.statusCode).to.equal(401);
+          expect(res.result.message).to.equal("Unauthorized");
+        }, done);
+      });
+    });
+  });
+
+  it('returns the response for user with permissions', function(done) {
+    var server = new Hapi.Server();
+    server.auth.scheme('custom', internals.authSchema);
+    server.auth.strategy('default', 'custom', true, {});
+
+    server.route({ method: 'GET', path: '/', config: {
+      auth: true,
+      plugins: {'hapiAuthExtra': {
+        validateEntityAcl: true,
+        aclQuery: function(id, cb) {
+          cb(null, {_user: '1', name: 'Hello'});
+        }
+      }},
+      handler: function (request, reply) { reply("Authorized");}
+    }});
+    server.pack.register(PluginObject, {}, function(err) {
+      server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN', _id: '1'}}, function(res) {
+        internals.asyncCheck(function() {
+          expect(res.statusCode).to.equal(200);
+          expect(res.result).to.equal("Authorized");
+        }, done);
+      });
+    });
+  });
+
+  it('handles custom user id field', function(done) {
+    var server = new Hapi.Server();
+    server.auth.scheme('custom', internals.authSchema);
+    server.auth.strategy('default', 'custom', true, {});
+
+    server.route({ method: 'GET', path: '/', config: {
+      auth: true,
+      plugins: {'hapiAuthExtra': {
+        validateEntityAcl: true,
+        userIdField: 'myId',
+        aclQuery: function(id, cb) {
+          cb(null, {_user: '1', name: 'Hello'});
+        }
+      }},
+      handler: function (request, reply) { reply("Authorized");}
+    }});
+    server.pack.register(PluginObject, {}, function(err) {
+      server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN', myId: '1'}}, function(res) {
+        internals.asyncCheck(function() {
+          expect(res.statusCode).to.equal(200);
+          expect(res.result).to.equal("Authorized");
+        }, done);
+      });
+    });
+  });
+
+  it('handles custom entity user field', function(done) {
+    var server = new Hapi.Server();
+    server.auth.scheme('custom', internals.authSchema);
+    server.auth.strategy('default', 'custom', true, {});
+
+    server.route({ method: 'GET', path: '/', config: {
+      auth: true,
+      plugins: {'hapiAuthExtra': {
+        validateEntityAcl: true,
+        entityUserField: 'creator',
+        aclQuery: function(id, cb) {
+          cb(null, {creator: '1', name: 'Hello'});
+        }
+      }},
+      handler: function (request, reply) { reply("Authorized");}
+    }});
+    server.pack.register(PluginObject, {}, function(err) {
+      server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN', _id: '1'}}, function(res) {
+        internals.asyncCheck(function() {
+          expect(res.statusCode).to.equal(200);
+          expect(res.result).to.equal("Authorized");
+        }, done);
+      });
+    });
+  });
 });
 
 internals.authSchema = function() {
