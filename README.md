@@ -20,22 +20,25 @@ you need to register the plugin and enable 'auth-token' authentication schema th
 
 Example:
 ```javascript
+// Sample token validator, you may replace with your own implementation. 
 function validateToken(token, cb) {
-  return cb(null, {_id: '123', name: 'Test User'});
+  return cb(null, {_id: '123', name: 'Test User'}); // Returns a sample user, this is the authenticated user. 
 }
 
 var server = Hapi.createServer(0);
+// Register the plugin
 server.pack.register('hapi-auth-extra', {
   tokenAuth: {
-    tokenValidator: validateToken
+    tokenValidator: validateToken // Set the custom validator 
   }
 }, function(err) {
 
   server.route({ method: 'GET', path: '/', config: {
-    auth: true,
+    auth: true, // Protect this route
     handler: function (request, reply) { reply("Authorized");}
   }});
 
+  // Load the authentication schema 
   server.auth.strategy('default', 'auth-token');
 });
 ```
