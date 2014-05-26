@@ -59,7 +59,41 @@ server.route({ method: 'GET', path: '/', config: {
 
 **Note:** every route that uses hapiAuthExtra must be protected by an authentication schema (auth: true).
 
-supported parameters: 
+**Features:**
+
+* Protected by role
+You can protect a route and set a role that is required for executing it. 
+The following example makes sure that only admins will be able to create new products. 
+
+```javascript
+server.route({ method: 'POST', path: '/product', config: {
+  auth: true, // Protected route
+  plugins: {'hapiAuthExtra': {role: 'ADMIN'}}, // Only admin 
+  handler: function (request, reply) { reply({title: 'New product'}).code(201);} 
+}});
+```
+
+* Default entity ACL
+You can protect a route and allow only the entitiy's creator to modify it.
+The following example makes sure that only the video owner will be able to delete it.
+
+```javascript
+server.route({ method: 'DELETE', path: '/video/{id}', config: {
+      auth: true, // Protected route
+      plugins: {'hapiAuthExtra': {
+        validateEntityAcl: true, // Validate the entity ACL
+        aclQuery: function(id, cb) { // This query is used to fetch the entitiy, by default auth-extra will verify the field _user.
+          cb(null, {_user: '1', name: 'Hello'}); // You can use and method you want as long as you keep this signature.
+        }
+      }},
+      handler: function (request, reply) { reply("Authorized");}
+    }});
+```
+
+* Custom ACL
+TBD
+
+Full list of supported parameters: 
 --------------------
 * role - String: enforces that only users that has this role can access the route
 * aclQuery - Function: fetches an entity using the provided query, it allows the plugin to verify that the authenticated user has permissions to access this entity. the function signature should be function(parameter, cb).
