@@ -59,7 +59,7 @@ server.route({ method: 'GET', path: '/', config: {
 
 **Note:** every route that uses hapiAuthExtra must be protected by an authentication schema (auth: true).
 
-**Features:**
+#### Examples
 
 * Protected by role
 You can protect a route and set a role that is required for executing it. 
