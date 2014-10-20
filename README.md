@@ -9,6 +9,10 @@ It includes:
 * ACL support
 * Authentication strategy for APIs (Token based)
 
+
+### Support
+Hapi <= 5.*
+
 How to use it:
 --------------
 
