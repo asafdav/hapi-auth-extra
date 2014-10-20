@@ -26,14 +26,18 @@
   },
   "homepage": "https://github.com/asafdav/hapi-auth-extra",
   "dependencies": {
-    "hapi": "^4.1.4",
-    "hoek": "^2.1.0",
-    "joi": "^4.6.1",
-    "q": "^1.0.1"
+    "chai": "^1.9.2",
+    "hapi": "^7.0.0",
+    "hoek": "^2.8.0",
+    "joi": "^4.7.0",
+    "jscoverage": "^0.5.6",
+    "mocha": "^1.21.5",
+    "q": "^2.0.2"
   },
   "devDependencies": {
-    "chai": "^1.9.1",
-    "jscoverage": "^0.5.0-rc2",
-    "mocha": "^1.19.0"
+    "chai": "^1.9.2",
+    "jscoverage": "^0.5.6",
+    "mocha": "^1.21.5",
+    "q": "^2.0.2"
   }
 }
