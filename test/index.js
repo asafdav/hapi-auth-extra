@@ -32,7 +32,7 @@ describe('hapiAuthExtra', function() {
         plugins: {'hapiAuthExtra': {role: 'USER'}},
         handler: function (request, reply) { reply("TEST");}
       }});
-      server.pack.register(PluginObject, {}, function(err) {
+      server.pack.register({plugin: PluginObject}, function(err) {
         server.pack.start(function(err) {
           expect(err).to.not.be.undefined;
           expect(err).to.match(/extra-auth can be enabled only for secured route/);
@@ -51,7 +51,7 @@ describe('hapiAuthExtra', function() {
         plugins: {'hapiAuthExtra': {bla: 'USER'}},
         handler: function (request, reply) { reply("TEST");}
       }});
-      server.pack.register(PluginObject, {}, function(err) {
+      server.pack.register({plugin: PluginObject}, function(err) {
         //expect(server.pack.start).to.throw(/extra-auth can be enabled only for secured route/);
         server.pack.start(function(err) {
           expect(err).to.not.be.undefined;
@@ -65,7 +65,7 @@ describe('hapiAuthExtra', function() {
     it('ignores routes without extra auth instructions', function(done) {
       var server = new Hapi.Server();
       server.route({ method: 'GET', path: '/', handler: function (request, reply) { reply("TEST"); } });
-      server.pack.register(PluginObject, {}, function(err) {
+      server.pack.register({plugin: PluginObject}, function(err) {
         server.inject('/', function(res) {
           expect(res.payload).to.equal("TEST");
           done();
@@ -85,7 +85,7 @@ describe('hapiAuthExtra', function() {
         plugins: {'hapiAuthExtra': {role: 'ADMIN'}},
         handler: function (request, reply) { reply("TEST");}
       }});
-      server.pack.register(PluginObject, {}, function(err) {
+      server.pack.register({plugin: PluginObject}, function(err) {
         server.inject({method: 'GET', url: '/', credentials: {role: 'USER'}}, function(res) {
           internals.asyncCheck(function() {
             expect(res.statusCode).to.equal(401);
@@ -105,7 +105,7 @@ describe('hapiAuthExtra', function() {
         plugins: {'hapiAuthExtra': {role: 'ADMIN'}},
         handler: function (request, reply) { reply("Authorized");}
       }});
-      server.pack.register(PluginObject, {}, function(err) {
+      server.pack.register({plugin: PluginObject}, function(err) {
         server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN'}}, function(res) {
           internals.asyncCheck(function() {
             expect(res.payload).to.equal('Authorized');
@@ -126,7 +126,7 @@ describe('hapiAuthExtra', function() {
         plugins: {'hapiAuthExtra': {aclQuery: 'not function'}},
         handler: function (request, reply) { reply("Authorized");}
       }});
-      server.pack.register(PluginObject, {}, function(err) {
+      server.pack.register({plugin: PluginObject}, function(err) {
         server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN'}}, function(res) {
           internals.asyncCheck(function() {
             expect(res.statusCode).to.equal(400)
@@ -148,7 +148,7 @@ describe('hapiAuthExtra', function() {
         }}},
         handler: function (request, reply) { reply(request.plugins.hapiAuthExtra.entity);}
       }});
-      server.pack.register(PluginObject, {}, function(err) {
+      server.pack.register({plugin: PluginObject}, function(err) {
         server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN'}}, function(res) {
           internals.asyncCheck(function() {
             expect(res.statusCode).to.equal(200);
@@ -170,7 +170,7 @@ describe('hapiAuthExtra', function() {
         }}},
         handler: function (request, reply) { reply("Oops");}
       }});
-      server.pack.register(PluginObject, {}, function(err) {
+      server.pack.register({plugin: PluginObject}, function(err) {
         server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN'}}, function(res) {
           internals.asyncCheck(function() {
             expect(res.statusCode).to.equal(404);
@@ -191,7 +191,7 @@ describe('hapiAuthExtra', function() {
         }}},
         handler: function (request, reply) { reply("Oops");}
       }});
-      server.pack.register(PluginObject, {}, function(err) {
+      server.pack.register({plugin: PluginObject}, function(err) {
         server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN'}}, function(res) {
           internals.asyncCheck(function() {
             expect(res.statusCode).to.equal(500);
@@ -212,7 +212,7 @@ describe('hapiAuthExtra', function() {
         plugins: {'hapiAuthExtra': {validateEntityAcl: true}},
         handler: function (request, reply) { reply("Authorized");}
       }});
-      server.pack.register(PluginObject, {}, function(err) {
+      server.pack.register({plugin: PluginObject}, function(err) {
         server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN'}}, function(res) {
           internals.asyncCheck(function() {
             expect(res.statusCode).to.equal(400);
@@ -237,7 +237,7 @@ describe('hapiAuthExtra', function() {
         }},
         handler: function (request, reply) { reply("Authorized");}
       }});
-      server.pack.register(PluginObject, {}, function(err) {
+      server.pack.register({plugin: PluginObject}, function(err) {
         server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN'}}, function(res) {
           internals.asyncCheck(function() {
             expect(res.statusCode).to.equal(404);
@@ -262,7 +262,7 @@ describe('hapiAuthExtra', function() {
         }},
         handler: function (request, reply) { reply("Authorized");}
       }});
-      server.pack.register(PluginObject, {}, function(err) {
+      server.pack.register({plugin: PluginObject}, function(err) {
         server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN'}}, function(res) {
           internals.asyncCheck(function() {
             expect(res.statusCode).to.equal(401);
@@ -287,7 +287,7 @@ describe('hapiAuthExtra', function() {
         }},
         handler: function (request, reply) { reply("Authorized");}
       }});
-      server.pack.register(PluginObject, {}, function(err) {
+      server.pack.register({plugin: PluginObject}, function(err) {
         server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN'}}, function(res) {
           internals.asyncCheck(function() {
             expect(res.statusCode).to.equal(500);
@@ -314,7 +314,7 @@ describe('hapiAuthExtra', function() {
           reply(request.plugins.hapiAuthExtra.entity);
         }
       }});
-      server.pack.register(PluginObject, {}, function(err) {
+      server.pack.register({plugin: PluginObject}, function(err) {
         server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN'}}, function(res) {
           internals.asyncCheck(function() {
             expect(res.statusCode).to.equal(200);
@@ -344,7 +344,7 @@ describe('default acl validator', function() {
       }},
       handler: function (request, reply) { reply("Authorized");}
     }});
-    server.pack.register(PluginObject, {}, function(err) {
+    server.pack.register({plugin: PluginObject}, function(err) {
       server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN'}}, function(res) {
         internals.asyncCheck(function() {
           expect(res.statusCode).to.equal(401);
@@ -369,7 +369,7 @@ describe('default acl validator', function() {
       }},
       handler: function (request, reply) { reply("Authorized");}
     }});
-    server.pack.register(PluginObject, {}, function(err) {
+    server.pack.register({plugin: PluginObject}, function(err) {
       server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN', _id: '2'}}, function(res) {
         internals.asyncCheck(function() {
           expect(res.statusCode).to.equal(401);
@@ -394,7 +394,7 @@ describe('default acl validator', function() {
       }},
       handler: function (request, reply) { reply("Authorized");}
     }});
-    server.pack.register(PluginObject, {}, function(err) {
+    server.pack.register({plugin: PluginObject}, function(err) {
       server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN', _id: '1'}}, function(res) {
         internals.asyncCheck(function() {
           expect(res.statusCode).to.equal(200);
@@ -420,7 +420,7 @@ describe('default acl validator', function() {
       }},
       handler: function (request, reply) { reply("Authorized");}
     }});
-    server.pack.register(PluginObject, {}, function(err) {
+    server.pack.register({plugin: PluginObject}, function(err) {
       server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN', myId: '1'}}, function(res) {
         internals.asyncCheck(function() {
           expect(res.statusCode).to.equal(200);
@@ -446,7 +446,7 @@ describe('default acl validator', function() {
       }},
       handler: function (request, reply) { reply("Authorized");}
     }});
-    server.pack.register(PluginObject, {}, function(err) {
+    server.pack.register({plugin: PluginObject}, function(err) {
       server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN', _id: '1'}}, function(res) {
         internals.asyncCheck(function() {
           expect(res.statusCode).to.equal(200);

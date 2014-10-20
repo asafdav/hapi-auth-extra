@@ -26,7 +26,7 @@ describe('AuthTokenSchema', function() {
   describe('initialize', function() {
     it('validated the presence of tokenValidator', function(done) {
       var server = new Hapi.Server(0);
-      server.pack.register(PluginObject, {tokenAuth: true}, function (err) {
+      server.pack.register({plugin: PluginObject, options: {tokenAuth: true}}, function (err) {
         expect(err).to.be.defined;
         expect(err).to.match(/tokenValidator is required/);
         done();
@@ -35,7 +35,7 @@ describe('AuthTokenSchema', function() {
 
     it('auth-token strategy is not available when tokenAuth is false', function(done) {
       var server = new Hapi.Server(0);
-      server.pack.register(PluginObject, {tokenAuth: false}, function (err) {
+      server.pack.register({plugin: PluginObject, options: {tokenAuth: false}}, function (err) {
         expect(function() {server.auth.strategy('default', 'auth-token');}).to.throw(/unknown scheme: auth-token/);
         done();
       });
@@ -43,7 +43,7 @@ describe('AuthTokenSchema', function() {
 
     it('auth-token strategy is available when tokenAuth is enabled', function(done) {
       var server = new Hapi.Server(0);
-      server.pack.register(PluginObject, {tokenAuth: {tokenValidator: function() {}}}, function (err) {
+      server.pack.register({plugin: PluginObject, options: {tokenAuth: {tokenValidator: function() {}}}}, function (err) {
         expect(function() {server.auth.strategy('default', 'auth-token');}).to.not.throw();
         done();
       });
@@ -53,7 +53,7 @@ describe('AuthTokenSchema', function() {
   describe('#authenticate', function() {
     it ('returns error when a token is not found', function(done) {
       var server = new Hapi.Server(0);
-      server.pack.register(PluginObject, {tokenAuth: {tokenValidator: function(token, cb) {cb(null,null)}}}, function (err) {
+      server.pack.register({plugin: PluginObject, options: {tokenAuth: {tokenValidator: function(token, cb) {cb(null,null)}}}}, function (err) {
         server.auth.strategy('default', 'auth-token');
         internals.routes(server);
 
@@ -68,11 +68,11 @@ describe('AuthTokenSchema', function() {
 
     it ('returns error when a token validator fails', function(done) {
       var server = new Hapi.Server(0);
-      server.pack.register(PluginObject, {
+      server.pack.register({plugin: PluginObject, options: {
         tokenAuth: {
           tokenValidator: function(token, cb) {cb("BLA",null)},
           tokenSelector: function(request) {return "1"}
-        }}, function (err) {
+        }}}, function (err) {
         server.auth.strategy('default', 'auth-token');
         internals.routes(server);
 
@@ -87,11 +87,11 @@ describe('AuthTokenSchema', function() {
 
     it ('returns an error when a no user was found', function(done) {
       var server = new Hapi.Server(0);
-      server.pack.register(PluginObject, {
+      server.pack.register({plugin: PluginObject, options:{
         tokenAuth: {
           tokenValidator: function(token, cb) {cb(null,null)},
           tokenSelector: function(request) {return "1"}
-        }}, function (err) {
+        }}}, function (err) {
         server.auth.strategy('default', 'auth-token');
         internals.routes(server);
 
@@ -106,11 +106,11 @@ describe('AuthTokenSchema', function() {
 
     it ('returns the response for valid requests', function(done) {
       var server = new Hapi.Server(0);
-      server.pack.register(PluginObject, {
+      server.pack.register({plugin: PluginObject, options: {
         tokenAuth: {
           tokenValidator: function(token, cb) {cb(null,{name: 'Asaf'})},
           tokenSelector: function(request) {return "1"}
-        }}, function (err) {
+        }}}, function (err) {
         server.auth.strategy('default', 'auth-token');
         internals.routes(server);
 
