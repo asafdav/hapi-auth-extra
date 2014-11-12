@@ -1,52 +1,13 @@
-hapi-auth-extra
-===============
+# hapi-authorization
 
-[![Build Status](https://travis-ci.org/asafdav/hapi-auth-extra.svg?branch=master)](https://travis-ci.org/asafdav/hapi-auth-extra)
+> ACL support for hapijs apps
 
-Additional authentication toolbox for HapiJS.
-
-It includes: 
-* ACL support
-* Authentication strategy for APIs (Token based)
-
+[![Build Status](https://travis-ci.org/toymachiner62/hapi-authorization.svg)](https://travis-ci.org/toymachiner62/hapi-authorization)
 
 ### Support
-Hapi <= 5.*
+Hapi >= 6.* <= 7.*
 
-How to use it:
---------------
-
-### Token authentication
-
-This plugin provides an easy way to implement token based authentication, it could be a good solution for internal APIs, for external APIs please consider using oAuth instead.
-All you have to do is to provide a method that validates a token and returns the related user in case the token is valid. In order to use this feature,
-you need to register the plugin and enable 'auth-token' authentication schema that the plugin provides.
-
-Example:
-```javascript
-// Sample token validator, you may replace with your own implementation. 
-function validateToken(token, cb) {
-  return cb(null, {_id: '123', name: 'Test User'}); // Returns a sample user, this is the authenticated user. 
-}
-
-var server = Hapi.createServer(0);
-// Register the plugin
-server.pack.register('hapi-auth-extra', {
-  tokenAuth: {
-    tokenValidator: validateToken // Set the custom validator 
-  }
-}, function(err) {
-
-  server.route({ method: 'GET', path: '/', config: {
-    auth: true, // Protect this route
-    handler: function (request, reply) { reply("Authorized");}
-  }});
-
-  // Load the authentication schema 
-  server.auth.strategy('default', 'auth-token');
-});
-```
-
+# Usage
 
 ### ACL
 You can use this plugin to add ACL and protect your routes. you can configure required roles and allow access to certain endpoints only to specific users.

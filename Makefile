@@ -1,6 +1,3 @@
-test:
-	@node node_modules/mocha/bin/mocha
-
 test-cov: clean lib-cov
 	@AUTH_EXTRA_COV=1 node_modules/mocha/bin/mocha -R html-cov > coverage.html
 

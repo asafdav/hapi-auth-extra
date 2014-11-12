@@ -1,32 +1,40 @@
 {
-  "name": "hapi-auth-extra",
+  "name": "hapi-authorization",
   "version": "0.0.4",
-  "description": "Additional auth toolbox for HapiJS including ACL support",
+  "description": "ACL support for hapijs apps",
   "main": "index.js",
   "scripts": {
-    "test": "make test"
+    "test": "mocha test"
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:asafdav/hapi-auth-extra.git"
+    "url": "git@github.com:toymachiner62/hapi-authorization.git"
   },
   "keywords": [
     "hapi",
     "auth",
+    "authorization",
     "acl"
   ],
-  "author": {
-    "name": "Asaf David",
-    "email": "asafdav@gmail.com",
-    "url": "http://about.me/asafdavid"
-  },
+  "contributors": [
+    {
+      "name": "Asaf David",
+      "email": "asafdav@gmail.com",
+      "url": "http://about.me/asafdavid"
+    },
+    {
+      "name": " Tom Caflisch",
+      "email": "tomcaflisch@gmail.com",
+      "url": "https://github.com/toymachiner62"
+    }
+  ],
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/asafdav/hapi-auth-extra/issues"
+    "url": "https://github.com/toymachiner62/hapi-authorization/issues"
   },
-  "homepage": "https://github.com/asafdav/hapi-auth-extra",
+  "homepage": "https://github.com/toymachiner62/hapi-authorization",
   "dependencies": {
-    "hapi": "^4.1.4",
+    "hapi": "^7.0.0",
     "hoek": "^2.1.0",
     "joi": "^4.6.1",
     "q": "^1.0.1"
@@ -34,6 +42,6 @@
   "devDependencies": {
     "chai": "^1.9.1",
     "jscoverage": "^0.5.0-rc2",
-    "mocha": "^1.19.0"
+    "mocha": "^1.21.4"
   }
 }

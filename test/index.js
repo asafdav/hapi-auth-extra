@@ -1,7 +1,3 @@
-/**
- * Created by asafdav on 17/05/14.
- */
-
 // External modules
 var Chai = require('chai');
 var Hapi = require('hapi');
@@ -47,7 +43,7 @@ describe('hapiAuthExtra', function() {
       server.auth.scheme('custom', internals.authSchema);
       server.auth.strategy('default', 'custom', true, {});
       server.route({ method: 'GET', path: '/', config: {
-        auth: true,
+        auth: 'default',
         plugins: {'hapiAuthExtra': {bla: 'USER'}},
         handler: function (request, reply) { reply("TEST");}
       }});
@@ -81,7 +77,7 @@ describe('hapiAuthExtra', function() {
       server.auth.strategy('default', 'custom', true, {});
 
       server.route({ method: 'GET', path: '/', config: {
-        auth: true,
+        auth: 'default',
         plugins: {'hapiAuthExtra': {role: 'ADMIN'}},
         handler: function (request, reply) { reply("TEST");}
       }});
@@ -101,7 +97,7 @@ describe('hapiAuthExtra', function() {
       server.auth.strategy('default', 'custom', true, {});
 
       server.route({ method: 'GET', path: '/', config: {
-        auth: true,
+        auth: 'default',
         plugins: {'hapiAuthExtra': {role: 'ADMIN'}},
         handler: function (request, reply) { reply("Authorized");}
       }});
@@ -122,7 +118,7 @@ describe('hapiAuthExtra', function() {
       server.auth.strategy('default', 'custom', true, {});
 
       server.route({ method: 'GET', path: '/', config: {
-        auth: true,
+        auth: 'default',
         plugins: {'hapiAuthExtra': {aclQuery: 'not function'}},
         handler: function (request, reply) { reply("Authorized");}
       }});
@@ -142,7 +138,7 @@ describe('hapiAuthExtra', function() {
       server.auth.strategy('default', 'custom', true, {});
 
       server.route({ method: 'GET', path: '/', config: {
-        auth: true,
+        auth: 'default',
         plugins: {'hapiAuthExtra': {aclQuery: function(id, cb) {
           cb(null, {id: '1', name: 'Asaf'});
         }}},
@@ -164,7 +160,7 @@ describe('hapiAuthExtra', function() {
       server.auth.strategy('default', 'custom', true, {});
 
       server.route({ method: 'GET', path: '/', config: {
-        auth: true,
+        auth: 'default',
         plugins: {'hapiAuthExtra': {aclQuery: function(id, cb) {
           cb(null, null);
         }}},
@@ -185,7 +181,7 @@ describe('hapiAuthExtra', function() {
       server.auth.strategy('default', 'custom', true, {});
 
       server.route({ method: 'GET', path: '/', config: {
-        auth: true,
+        auth: 'default',
         plugins: {'hapiAuthExtra': {aclQuery: function(id, cb) {
           cb(new Error("Boomy"), null);
         }}},
@@ -208,7 +204,7 @@ describe('hapiAuthExtra', function() {
       server.auth.strategy('default', 'custom', true, {});
 
       server.route({ method: 'GET', path: '/', config: {
-        auth: true,
+        auth: 'default',
         plugins: {'hapiAuthExtra': {validateEntityAcl: true}},
         handler: function (request, reply) { reply("Authorized");}
       }});
@@ -228,7 +224,7 @@ describe('hapiAuthExtra', function() {
       server.auth.strategy('default', 'custom', true, {});
 
       server.route({ method: 'GET', path: '/', config: {
-        auth: true,
+        auth: 'default',
         plugins: {'hapiAuthExtra': {
           validateEntityAcl: true,
           aclQuery: function(id, cb) {
@@ -252,7 +248,7 @@ describe('hapiAuthExtra', function() {
       server.auth.strategy('default', 'custom', true, {});
 
       server.route({ method: 'GET', path: '/', config: {
-        auth: true,
+        auth: 'default',
         plugins: {'hapiAuthExtra': {
           validateEntityAcl: true,
           validateAclMethod: 'isGranted',
@@ -277,7 +273,7 @@ describe('hapiAuthExtra', function() {
       server.auth.strategy('default', 'custom', true, {});
 
       server.route({ method: 'GET', path: '/', config: {
-        auth: true,
+        auth: 'default',
         plugins: {'hapiAuthExtra': {
           validateEntityAcl: true,
           validateAclMethod: 'isGranted',
@@ -302,7 +298,7 @@ describe('hapiAuthExtra', function() {
       server.auth.strategy('default', 'custom', true, {});
 
       server.route({ method: 'GET', path: '/', config: {
-        auth: true,
+        auth: 'default',
         plugins: {'hapiAuthExtra': {
           validateEntityAcl: true,
           validateAclMethod: 'isGranted',
@@ -335,7 +331,7 @@ describe('default acl validator', function() {
     server.auth.strategy('default', 'custom', true, {});
 
     server.route({ method: 'GET', path: '/', config: {
-      auth: true,
+      auth: 'default',
       plugins: {'hapiAuthExtra': {
         validateEntityAcl: true,
         aclQuery: function(id, cb) {
@@ -360,7 +356,7 @@ describe('default acl validator', function() {
     server.auth.strategy('default', 'custom', true, {});
 
     server.route({ method: 'GET', path: '/', config: {
-      auth: true,
+      auth: 'default',
       plugins: {'hapiAuthExtra': {
         validateEntityAcl: true,
         aclQuery: function(id, cb) {
@@ -385,7 +381,7 @@ describe('default acl validator', function() {
     server.auth.strategy('default', 'custom', true, {});
 
     server.route({ method: 'GET', path: '/', config: {
-      auth: true,
+      auth: 'default',
       plugins: {'hapiAuthExtra': {
         validateEntityAcl: true,
         aclQuery: function(id, cb) {
@@ -410,7 +406,7 @@ describe('default acl validator', function() {
     server.auth.strategy('default', 'custom', true, {});
 
     server.route({ method: 'GET', path: '/', config: {
-      auth: true,
+      auth: 'default',
       plugins: {'hapiAuthExtra': {
         validateEntityAcl: true,
         userIdField: 'myId',
@@ -436,7 +432,7 @@ describe('default acl validator', function() {
     server.auth.strategy('default', 'custom', true, {});
 
     server.route({ method: 'GET', path: '/', config: {
-      auth: true,
+      auth: 'default',
       plugins: {'hapiAuthExtra': {
         validateEntityAcl: true,
         entityUserField: 'creator',

@@ -22,7 +22,7 @@ var internals = {};
 // Test shortcuts
 var expect = Chai.expect;
 
-describe('AuthTokenSchema', function() {
+/*describe('AuthTokenSchema', function() {
   describe('initialize', function() {
     it('validated the presence of tokenValidator', function(done) {
       var server = new Hapi.Server(0);
@@ -123,7 +123,7 @@ describe('AuthTokenSchema', function() {
       });
     });
   });
-});
+});*/
 
 internals.routes = function(server) {
   server.route({ method: 'GET', path: '/', config: {
