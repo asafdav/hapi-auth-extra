@@ -5,7 +5,7 @@
 [![Build Status](https://travis-ci.org/toymachiner62/hapi-authorization.svg)](https://travis-ci.org/toymachiner62/hapi-authorization)
 
 ### Support
-Hapi >= 6.* <= 7.*
+Hapi >= 6
 
 # Usage
 

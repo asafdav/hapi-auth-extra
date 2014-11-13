@@ -473,18 +473,15 @@ describe('default acl validator', function() {
 });
 
 internals.authSchema = function() {
-	//console.log('inside authSchema');
+
   var scheme = {
     authenticate: function (request, reply) {
       return reply(null, { username: "asafdav", role: 'USER'});
     },
     payload: function (request, next) {
-			console.log('in authSchema');
-			console.log(request.auth.credentials.payload);
       return next(request.auth.credentials.payload);
     },
     response: function (request, next) {
-
       return next();
     }
   };
