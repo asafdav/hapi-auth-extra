@@ -12,17 +12,27 @@ Hapi >= 6
 ### ACL
 You can use this plugin to add ACL and protect your routes. you can configure required roles and allow access to certain endpoints only to specific users.
 
-In order to activate the plugin for a specific route, all you have to do is to add hapiAuthExtra instructions to the route configuration, for example: 
+In order to activate the plugin for a specific route, all you have to do is to add hapiAuthorization instructions to the route configuration, for example:
 
+**Authorize a single role**
 ```javascript
 server.route({ method: 'GET', path: '/', config: {
   auth: true,
-  plugins: {'hapiAuthExtra': {role: 'ADMIN'}},
+  plugins: {'hapiAuthorization': {role: 'ADMIN'}},
   handler: function (request, reply) { reply("Great!");}
 }});
 ```
 
-**Note:** every route that uses hapiAuthExtra must be protected by an authentication schema (auth: true).
+**Authorize multiple roles**
+```javascript
+server.route({ method: 'GET', path: '/', config: {
+  auth: true,
+  plugins: {'hapiAuthorization': {role: ['USER', 'ADMIN']}},
+  handler: function (request, reply) { reply("Great!");}
+}});
+```
+
+**Note:** every route that uses hapiAuthorization must be protected by an authentication schema (auth: true).
 
 #### Examples
 
@@ -33,7 +43,7 @@ The following example makes sure that only admins will be able to create new pro
 ```javascript
 server.route({ method: 'POST', path: '/product', config: {
   auth: true, // Protected route
-  plugins: {'hapiAuthExtra': {role: 'ADMIN'}}, // Only admin 
+  plugins: {'hapiAuthorization': {role: 'ADMIN'}}, // Only admin
   handler: function (request, reply) { reply({title: 'New product'}).code(201);} 
 }});
 ```
@@ -45,7 +55,7 @@ The following example makes sure that only the video owner will be able to delet
 ```javascript
 server.route({ method: 'DELETE', path: '/video/{id}', config: {
       auth: true, // Protected route
-      plugins: {'hapiAuthExtra': {
+      plugins: {'hapiAuthorization': {
         validateEntityAcl: true, // Validate the entity ACL
         aclQuery: function(id, cb) { // This query is used to fetch the entitiy, by default auth-extra will verify the field _user.
           cb(null, {_user: '1', name: 'Hello'}); // You can use and method you want as long as you keep this signature.
