@@ -6,7 +6,7 @@ var Hapi = require('hapi');
 var libpath = process.env['AUTH_EXTRA_COV'] ? '../lib-cov' : '../lib';
 var Plugin = require(libpath + '/index');
 var PluginObject = {
-  name: 'hapiAuthExtra',
+  name: 'hapiAuthorization',
   version: '0.0.0',
   register: Plugin.register,
   path: libpath
@@ -18,14 +18,14 @@ var internals = {};
 // Test shortcuts
 var expect = Chai.expect;
 
-describe('hapiAuthExtra', function() {
+describe('hapi-authorization', function() {
 
   describe('Initialize', function() {
 
-    it('makes sure that extra-auth can be enabled only for secured routes', function(done) {
+    it('makes sure that hapi-authorization can be enabled only for secured routes', function(done) {
       var server = new Hapi.Server(0);
       server.route({ method: 'GET', path: '/', config: {
-        plugins: {'hapiAuthExtra': {role: 'USER'}},
+        plugins: {'hapiAuthorization': {role: 'USER'}},
         handler: function (request, reply) { reply("TEST");}
       }});
       server.pack.register(PluginObject, {}, function(err) {
@@ -38,13 +38,13 @@ describe('hapiAuthExtra', function() {
       });
     });
 
-    it('Validates the extra-auth routes parameters', function(done) {
+    it('Validates the hapi-authorization routes parameters', function(done) {
       var server = new Hapi.Server(0);
       server.auth.scheme('custom', internals.authSchema);
       server.auth.strategy('default', 'custom', true, {});
       server.route({ method: 'GET', path: '/', config: {
         auth: 'default',
-        plugins: {'hapiAuthExtra': {bla: 'USER'}},
+        plugins: {'hapiAuthorization': {bla: 'USER'}},
         handler: function (request, reply) { reply("TEST");}
       }});
       server.pack.register(PluginObject, {}, function(err) {
@@ -58,7 +58,7 @@ describe('hapiAuthExtra', function() {
       });
     });
 
-    it('ignores routes without extra auth instructions', function(done) {
+    it('ignores routes without hapi-authorization instructions', function(done) {
       var server = new Hapi.Server();
       server.route({ method: 'GET', path: '/', handler: function (request, reply) { reply("TEST"); } });
       server.pack.register(PluginObject, {}, function(err) {
@@ -78,7 +78,7 @@ describe('hapiAuthExtra', function() {
 
       server.route({ method: 'GET', path: '/', config: {
         auth: 'default',
-        plugins: {'hapiAuthExtra': {role: 'ADMIN'}},
+        plugins: {'hapiAuthorization': {role: 'ADMIN'}},
         handler: function (request, reply) { reply("TEST");}
       }});
       server.pack.register(PluginObject, {}, function(err) {
@@ -91,14 +91,14 @@ describe('hapiAuthExtra', function() {
       });
     });
 
-    it('Allows access to protected method for authorized users', function(done) {
+    it('Allows access to protected method for a single role', function(done) {
       var server = new Hapi.Server();
       server.auth.scheme('custom', internals.authSchema);
       server.auth.strategy('default', 'custom', true, {});
 
       server.route({ method: 'GET', path: '/', config: {
         auth: 'default',
-        plugins: {'hapiAuthExtra': {role: 'ADMIN'}},
+        plugins: {'hapiAuthorization': {role: 'ADMIN'}},
         handler: function (request, reply) { reply("Authorized");}
       }});
       server.pack.register(PluginObject, {}, function(err) {
@@ -109,6 +109,25 @@ describe('hapiAuthExtra', function() {
         });
       });
     });
+
+		it('Allows access to protected method for multiple authorized roles', function(done) {
+			var server = new Hapi.Server();
+			server.auth.scheme('custom', internals.authSchema);
+			server.auth.strategy('default', 'custom', true, {});
+
+			server.route({ method: 'GET', path: '/', config: {
+				auth: 'default',
+				plugins: {'hapiAuthorization': {role: ['USER', 'ADMIN']}},
+				handler: function (request, reply) { reply("Authorized");}
+			}});
+			server.pack.register(PluginObject, {}, function(err) {
+				server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN'}}, function(res) {
+					internals.asyncCheck(function() {
+						expect(res.payload).to.equal('Authorized');
+					}, done);
+				});
+			});
+		});
   });
 
   describe('fetchEntity', function() {
@@ -119,7 +138,7 @@ describe('hapiAuthExtra', function() {
 
       server.route({ method: 'GET', path: '/', config: {
         auth: 'default',
-        plugins: {'hapiAuthExtra': {aclQuery: 'not function'}},
+        plugins: {'hapiAuthorization': {aclQuery: 'not function'}},
         handler: function (request, reply) { reply("Authorized");}
       }});
       server.pack.register(PluginObject, {}, function(err) {
@@ -139,10 +158,10 @@ describe('hapiAuthExtra', function() {
 
       server.route({ method: 'GET', path: '/', config: {
         auth: 'default',
-        plugins: {'hapiAuthExtra': {aclQuery: function(id, cb) {
+        plugins: {'hapiAuthorization': {aclQuery: function(id, cb) {
           cb(null, {id: '1', name: 'Asaf'});
         }}},
-        handler: function (request, reply) { reply(request.plugins.hapiAuthExtra.entity);}
+        handler: function (request, reply) { reply(request.plugins.hapiAuthorization.entity);}
       }});
       server.pack.register(PluginObject, {}, function(err) {
         server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN'}}, function(res) {
@@ -161,7 +180,7 @@ describe('hapiAuthExtra', function() {
 
       server.route({ method: 'GET', path: '/', config: {
         auth: 'default',
-        plugins: {'hapiAuthExtra': {aclQuery: function(id, cb) {
+        plugins: {'hapiAuthorization': {aclQuery: function(id, cb) {
           cb(null, null);
         }}},
         handler: function (request, reply) { reply("Oops");}
@@ -182,7 +201,7 @@ describe('hapiAuthExtra', function() {
 
       server.route({ method: 'GET', path: '/', config: {
         auth: 'default',
-        plugins: {'hapiAuthExtra': {aclQuery: function(id, cb) {
+        plugins: {'hapiAuthorization': {aclQuery: function(id, cb) {
           cb(new Error("Boomy"), null);
         }}},
         handler: function (request, reply) { reply("Oops");}
@@ -205,7 +224,7 @@ describe('hapiAuthExtra', function() {
 
       server.route({ method: 'GET', path: '/', config: {
         auth: 'default',
-        plugins: {'hapiAuthExtra': {validateEntityAcl: true}},
+        plugins: {'hapiAuthorization': {validateEntityAcl: true}},
         handler: function (request, reply) { reply("Authorized");}
       }});
       server.pack.register(PluginObject, {}, function(err) {
@@ -225,7 +244,7 @@ describe('hapiAuthExtra', function() {
 
       server.route({ method: 'GET', path: '/', config: {
         auth: 'default',
-        plugins: {'hapiAuthExtra': {
+        plugins: {'hapiAuthorization': {
           validateEntityAcl: true,
           aclQuery: function(id, cb) {
             cb(null, null);
@@ -249,7 +268,7 @@ describe('hapiAuthExtra', function() {
 
       server.route({ method: 'GET', path: '/', config: {
         auth: 'default',
-        plugins: {'hapiAuthExtra': {
+        plugins: {'hapiAuthorization': {
           validateEntityAcl: true,
           validateAclMethod: 'isGranted',
           aclQuery: function(id, cb) {
@@ -274,7 +293,7 @@ describe('hapiAuthExtra', function() {
 
       server.route({ method: 'GET', path: '/', config: {
         auth: 'default',
-        plugins: {'hapiAuthExtra': {
+        plugins: {'hapiAuthorization': {
           validateEntityAcl: true,
           validateAclMethod: 'isGranted',
           aclQuery: function(id, cb) {
@@ -299,7 +318,7 @@ describe('hapiAuthExtra', function() {
 
       server.route({ method: 'GET', path: '/', config: {
         auth: 'default',
-        plugins: {'hapiAuthExtra': {
+        plugins: {'hapiAuthorization': {
           validateEntityAcl: true,
           validateAclMethod: 'isGranted',
           aclQuery: function(id, cb) {
@@ -307,7 +326,7 @@ describe('hapiAuthExtra', function() {
           }
         }},
         handler: function (request, reply) {
-          reply(request.plugins.hapiAuthExtra.entity);
+          reply(request.plugins.hapiAuthorization.entity);
         }
       }});
       server.pack.register(PluginObject, {}, function(err) {
@@ -332,7 +351,7 @@ describe('default acl validator', function() {
 
     server.route({ method: 'GET', path: '/', config: {
       auth: 'default',
-      plugins: {'hapiAuthExtra': {
+      plugins: {'hapiAuthorization': {
         validateEntityAcl: true,
         aclQuery: function(id, cb) {
           cb(null, {id: id, name: 'Hello'});
@@ -357,7 +376,7 @@ describe('default acl validator', function() {
 
     server.route({ method: 'GET', path: '/', config: {
       auth: 'default',
-      plugins: {'hapiAuthExtra': {
+      plugins: {'hapiAuthorization': {
         validateEntityAcl: true,
         aclQuery: function(id, cb) {
           cb(null, {_user: '1', name: 'Hello'});
@@ -382,7 +401,7 @@ describe('default acl validator', function() {
 
     server.route({ method: 'GET', path: '/', config: {
       auth: 'default',
-      plugins: {'hapiAuthExtra': {
+      plugins: {'hapiAuthorization': {
         validateEntityAcl: true,
         aclQuery: function(id, cb) {
           cb(null, {_user: '1', name: 'Hello'});
@@ -407,7 +426,7 @@ describe('default acl validator', function() {
 
     server.route({ method: 'GET', path: '/', config: {
       auth: 'default',
-      plugins: {'hapiAuthExtra': {
+      plugins: {'hapiAuthorization': {
         validateEntityAcl: true,
         userIdField: 'myId',
         aclQuery: function(id, cb) {
@@ -433,7 +452,7 @@ describe('default acl validator', function() {
 
     server.route({ method: 'GET', path: '/', config: {
       auth: 'default',
-      plugins: {'hapiAuthExtra': {
+      plugins: {'hapiAuthorization': {
         validateEntityAcl: true,
         entityUserField: 'creator',
         aclQuery: function(id, cb) {
@@ -454,12 +473,14 @@ describe('default acl validator', function() {
 });
 
 internals.authSchema = function() {
+	//console.log('inside authSchema');
   var scheme = {
     authenticate: function (request, reply) {
       return reply(null, { username: "asafdav", role: 'USER'});
     },
     payload: function (request, next) {
-
+			console.log('in authSchema');
+			console.log(request.auth.credentials.payload);
       return next(request.auth.credentials.payload);
     },
     response: function (request, next) {
@@ -471,7 +492,7 @@ internals.authSchema = function() {
 return scheme;
 };
 
-internals.asyncCheck = function(f, done ) {
+internals.asyncCheck = function(f, done) {
   try {
     f();
     done();
