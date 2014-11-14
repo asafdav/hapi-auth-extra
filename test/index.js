@@ -9,7 +9,8 @@ var PluginObject = {
   name: 'hapiAuthorization',
   version: '0.0.0',
   register: Plugin.register,
-  path: libpath
+  path: libpath,
+
 };
 
 // Declare internals
@@ -31,7 +32,7 @@ describe('hapi-authorization', function() {
       server.pack.register(PluginObject, {}, function(err) {
         server.pack.start(function(err) {
           expect(err).to.not.be.undefined;
-          expect(err).to.match(/extra-auth can be enabled only for secured route/);
+          expect(err).to.match(/hapi-authorization can be enabled only for secured route/);
           server.pack.stop(); // Make sure the server is stopped
           done();
         });
@@ -104,7 +105,8 @@ describe('hapi-authorization', function() {
       server.pack.register(PluginObject, {}, function(err) {
         server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN'}}, function(res) {
           internals.asyncCheck(function() {
-            expect(res.payload).to.equal('Authorized');
+            expect(res.statusCode).to.equal(200);
+						expect(res.payload).to.equal('Authorized');
           }, done);
         });
       });
@@ -117,13 +119,73 @@ describe('hapi-authorization', function() {
 
 			server.route({ method: 'GET', path: '/', config: {
 				auth: 'default',
-				plugins: {'hapiAuthorization': {role: ['USER', 'ADMIN']}},
+				plugins: {'hapiAuthorization': {roles: ['USER', 'ADMIN']}},
 				handler: function (request, reply) { reply("Authorized");}
 			}});
 			server.pack.register(PluginObject, {}, function(err) {
 				server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN'}}, function(res) {
 					internals.asyncCheck(function() {
 						expect(res.payload).to.equal('Authorized');
+					}, done);
+				});
+			});
+		});
+
+		it('Returns an error when specifying role (singular) with an array', function(done) {
+			var server = new Hapi.Server();
+			server.auth.scheme('custom', internals.authSchema);
+			server.auth.strategy('default', 'custom', true, {});
+
+			server.route({ method: 'GET', path: '/', config: {
+				auth: 'default',
+				plugins: {'hapiAuthorization': {role: ['USER', 'ADMIN']}},
+				handler: function (request, reply) { reply("Authorized");}
+			}});
+			server.pack.register(PluginObject, {}, function(err) {
+				server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN'}}, function(res) {
+					internals.asyncCheck(function() {
+						expect(res.statusCode).to.equal(400);
+						expect(res.result.message).to.equal('Invalid route options (Invalid settings) ValidationError: role must be a string');
+					}, done);
+				});
+			});
+		});
+
+		it('Returns an error when specifying roles (plural) with a string', function(done) {
+			var server = new Hapi.Server();
+			server.auth.scheme('custom', internals.authSchema);
+			server.auth.strategy('default', 'custom', true, {});
+
+			server.route({ method: 'GET', path: '/', config: {
+				auth: 'default',
+				plugins: {'hapiAuthorization': {roles: 'USER'}},
+				handler: function (request, reply) { reply("Authorized");}
+			}});
+			server.pack.register(PluginObject, {}, function(err) {
+				server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN'}}, function(res) {
+					internals.asyncCheck(function() {
+						expect(res.statusCode).to.equal(400);
+						expect(res.result.message).to.equal('Invalid route options (Invalid settings) ValidationError: roles must be an array');
+					}, done);
+				});
+			});
+		});
+
+		it('Returns an error when specifying both role and roles as options', function(done) {
+			var server = new Hapi.Server();
+			server.auth.scheme('custom', internals.authSchema);
+			server.auth.strategy('default', 'custom', true, {});
+
+			server.route({ method: 'GET', path: '/', config: {
+				auth: 'default',
+				plugins: {'hapiAuthorization': {role: 'USER', roles: ['USER', 'ADMIN']}},
+				handler: function (request, reply) { reply("Authorized");}
+			}});
+			server.pack.register(PluginObject, {}, function(err) {
+				server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN'}}, function(res) {
+					internals.asyncCheck(function() {
+						expect(res.statusCode).to.equal(400);
+						expect(res.result.message).to.equal('Invalid route options (Invalid settings) ValidationError: role conflict with forbidden peer roles');
 					}, done);
 				});
 			});
