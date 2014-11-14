@@ -1,5 +1,5 @@
 test-cov: clean lib-cov
-	@AUTH_EXTRA_COV=1 node_modules/mocha/bin/mocha -R html-cov > coverage.html
+	@HAPI_AUTHORIZATION_COV=1 node_modules/mocha/bin/mocha -R html-cov > coverage.html
 
 clean:
 	@rm -rf ./lib-cov \

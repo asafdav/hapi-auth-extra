@@ -57,7 +57,7 @@ server.route({ method: 'DELETE', path: '/video/{id}', config: {
       auth: true, // Protected route
       plugins: {'hapiAuthorization': {
         validateEntityAcl: true, // Validate the entity ACL
-        aclQuery: function(id, cb) { // This query is used to fetch the entitiy, by default auth-extra will verify the field _user.
+        aclQuery: function(id, cb) { // This query is used to fetch the entitiy, by default hapi-authorization will verify the field _user.
           cb(null, {_user: '1', name: 'Hello'}); // You can use and method you want as long as you keep this signature.
         }
       }},
