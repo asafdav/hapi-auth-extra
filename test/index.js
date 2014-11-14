@@ -90,6 +90,13 @@ describe('hapi-authorization', function() {
       }});
       server.pack.register(defaultPluginObject, {}, function(err) {
         server.inject({method: 'GET', url: '/', credentials: {role: 'USER'}}, function(res) {
+
+					console.log('ERR = ');
+					console.log(err);
+
+					console.log('RES = ');
+					console.log(res);
+
           internals.asyncCheck(function() {
             expect(res.statusCode).to.equal(401);
             expect(res.result.message).to.equal("Unauthorized");
@@ -723,12 +730,17 @@ describe('default acl validator', function() {
 
 			server.route({ method: 'GET', path: '/', config: {
 				auth: 'default',
-				plugins: {'hapiAuthorization': {role: 'ADMIN'}},
+				plugins: {'hapiAuthorization': {role: 'OWNER'}},
 				handler: function (request, reply) { reply("TEST");}
 			}});
 			server.pack.register(customPluginObject, {}, function(err) {
-				server.inject({method: 'GET', url: '/', credentials: {role: 'USER'}}, function(res) {
+				server.inject({method: 'GET', url: '/', credentials: {role: 'EMPLOYEE'}}, function(res) {
 					internals.asyncCheck(function() {
+
+						console.log('err = ');
+						console.log(err);
+						console.log('res = ');
+						console.log(res);
 						expect(res.statusCode).to.equal(401);
 						expect(res.result.message).to.equal("Unauthorized");
 					}, done);
