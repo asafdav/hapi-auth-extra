@@ -46,6 +46,42 @@ describe('hapi-authorization', function() {
       });
     });
 
+		it('should allow hapi-authorization for routes secured in the route config', function(done) {
+			var server = new Hapi.Server(0);
+			server.auth.scheme('custom', internals.authSchema);
+			server.auth.strategy('default', 'custom', false, {});
+			server.route({ method: 'GET', path: '/', config: {
+				auth: 'default',
+				plugins: {'hapiAuthorization': {role: 'USER'}},
+				handler: function (request, reply) { reply("TEST");}
+			}});
+			server.pack.register(defaultPluginObject, {}, function(err) {
+				server.pack.start(function(err) {
+					expect(err).to.be.undefined;
+					server.pack.stop(); // Make sure the server is stopped
+					done();
+				});
+			});
+		});
+
+		it.only('should allow hapi-authorization for routes secured globally', function(done) {
+			var server = new Hapi.Server(0);
+			server.auth.scheme('custom', internals.authSchema);
+			server.auth.strategy('default', 'custom', false, {});
+			server.auth.default('default');
+			server.route({ method: 'GET', path: '/', config: {
+				plugins: {'hapiAuthorization': {role: 'USER'}},
+				handler: function (request, reply) { reply("TEST");}
+			}});
+			server.pack.register(defaultPluginObject, {}, function(err) {
+				server.pack.start(function(err) {
+					expect(err).to.be.undefined;
+					server.pack.stop(); // Make sure the server is stopped
+					done();
+				});
+			});
+		});
+
     it('Validates the hapi-authorization routes parameters', function(done) {
       var server = new Hapi.Server(0);
       server.auth.scheme('custom', internals.authSchema);
