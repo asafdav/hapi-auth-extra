@@ -14,6 +14,7 @@ Hapi >= 6
 **Note**: To use hapi-authorization you must have an authentication strategy defined.
 
 There are 2 ways to use hapi-authorization:
+
 1. With the default roles which are: "SUPER_ADMIN", "ADMIN", "USER", "GUEST"
 2. By defining your own roles
 
@@ -120,6 +121,7 @@ var plugins = [
 ];
 
 var validate = function(username, password, callback) {
+	// Perform authentication and callback with object that contains a role or an array of roles
 	callback(null, true, {username: username, role: 'EMPLOYEE'});
 }
 
