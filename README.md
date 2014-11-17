@@ -4,15 +4,42 @@
 
 [![Build Status](https://travis-ci.org/toymachiner62/hapi-authorization.svg)](https://travis-ci.org/toymachiner62/hapi-authorization)
 
+You can use this plugin to add ACL and protect your routes. you can configure required roles and allow access to certain endpoints only to specific users.
+
 ### Support
 Hapi >= 6
 
 # Usage
 
-### ACL
-You can use this plugin to add ACL and protect your routes. you can configure required roles and allow access to certain endpoints only to specific users.
+**Note**: To use hapi-authorization you must have an authentication strategy defined.
 
-In order to activate the plugin for a specific route, all you have to do is to add hapiAuthorization instructions to the route configuration, for example:
+There are 2 ways to use hapi-authorization:
+1. With the default roles which are: "SUPER_ADMIN", "ADMIN", "USER", "GUEST"
+2. By defining your own roles
+
+## To use hapi-authorization
+1. Include the plugin in your hapijs app.
+Example:
+```js
+var plugins = [
+	{
+		plugin: require('hapi-auth-basic')
+	},
+	{
+	plugin: require('hapi-authorization'),
+		options: {
+			roles: ['OWNER', 'MANAGER', 'EMPLOYEE']
+		}
+	}
+];
+
+server.pack.register(plugins, function(err) {
+...
+```
+
+In order to activate the plugin for a specific route, add hapiAuthorization instructions with the role(s) that should have access to the route configuration.
+
+Example:
 
 **Authorize a single role**
 ```javascript
@@ -27,7 +54,7 @@ server.route({ method: 'GET', path: '/', config: {
 ```javascript
 server.route({ method: 'GET', path: '/', config: {
   auth: true,
-  plugins: {'hapiAuthorization': {role: ['USER', 'ADMIN']}},
+  plugins: {'hapiAuthorization': {roles: ['USER', 'ADMIN']}},
   handler: function (request, reply) { reply("Great!");}
 }});
 ```
@@ -67,6 +94,68 @@ server.route({ method: 'DELETE', path: '/video/{id}', config: {
 
 * Custom ACL
 TBD
+
+### Example using hapi-auth-basic
+
+```js
+var Hapi = require('hapi');
+var modules = require('./modules');
+
+// Instantiate the server
+var server = new Hapi.Server('0.0.0.0', 3000, {cors: true, debug: {request: ['error']}});
+
+/**
+ * The hapijs plugins that we want to use and their configs
+ */
+var plugins = [
+	{
+		plugin: require('hapi-auth-basic')
+	},
+	{
+		plugin: require('hapi-authorization'),
+		options: {
+			roles: ['OWNER', 'MANAGER', 'EMPLOYEE']
+		}
+	}
+];
+
+var validate = function(username, password, callback) {
+	callback(null, true, {username: username, role: 'EMPLOYEE'});
+}
+
+/**
+ * Setup the server with plugins
+ */
+server.pack.register(plugins, function(err) {
+
+  // If there is an error on server startup
+  if(err) {
+    throw err;
+  }
+
+	server.auth.strategy('simple', 'basic', {validateFunc: validate});
+	server.auth.default('simple');
+
+	/**
+	 * Add all the modules within the modules folder
+	 */
+	for(var route in modules) {
+		server.route(modules[route]);
+	}
+
+	/**
+	 * Starts the server
+	 */
+	server.start(function (err) {
+
+		if(err) {
+			console.log(err);
+		}
+
+		console.log('Hapi server started @', server.info.uri);
+	});
+});
+```
 
 Full list of supported parameters: 
 --------------------
