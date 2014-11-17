@@ -18,16 +18,6 @@ There are 2 ways to use hapi-authorization:
 1. With the default roles which are: "SUPER_ADMIN", "ADMIN", "USER", "GUEST"
 2. By defining your own roles
 
-**Note**: The roles are hierarchical so with the defaults,
-"USER" has access to any routes that either "GUEST" or "USER" have access to,
-"ADMIN" has access to any routes that "ADMIN", "USER", or "GUEST" have access to, and
-"SUPER_ADMIN" has access to any routes that "SUPER_ADMIN", "ADMIN", "USER", or "GUEST" have access to.
-
-For custom roles, the hierarchy is the first roles have access to the later roles.
-For example if you have the roles `["OWNER", "MANAGER", "EMPLOYEE"]`,
-"MANAGER" has access to any routes that either "MANAGER", or "EMPLOYEE" have access to, and
-"OWNER" has access to any routes that either "OWNER", "MANAGER", or "EMPLOYEE" have access to
-
 ## Using hapi-authorization with default roles
 1. Include the plugin in your hapijs app.
 Example:
@@ -89,8 +79,7 @@ server.route({ method: 'GET', path: '/', config: {
 
 **Note:** Every route that uses hapiAuthorization must be protected by an authentication schema on the route itself (auth: 'someAuthStrategy'). Currently can't just use `auth.strategy.default()`
 
-
-### Full Example using hapi-auth-basic and hapi-authorization
+## Full Example using hapi-auth-basic and hapi-authorization
 
 ```js
 var Hapi = require('hapi');
@@ -153,7 +142,23 @@ server.pack.register(plugins, function(err) {
 });
 ```
 
-Full list of supported parameters: 
+## Gotchas
+
+### Hierarchy
+The roles are hierarchical so with the defaults,
+"USER" has access to any routes that either "GUEST" or "USER" have access to,
+"ADMIN" has access to any routes that "ADMIN", "USER", or "GUEST" have access to, and
+"SUPER_ADMIN" has access to any routes that "SUPER_ADMIN", "ADMIN", "USER", or "GUEST" have access to.
+
+For custom roles, the hierarchy is the first roles have access to the later roles.
+For example if you have the roles `["OWNER", "MANAGER", "EMPLOYEE"]`,
+"MANAGER" has access to any routes that either "MANAGER", or "EMPLOYEE" have access to, and
+"OWNER" has access to any routes that either "OWNER", "MANAGER", or "EMPLOYEE" have access to.
+
+### Auth before routes
+You must define your auth strategy before defining your routes, otherwise the route validation will fail.
+
+## Full list of supported parameters:
 --------------------
 * role - String: enforces that only users that have this role can access the route
 * roles - Array: enforces that only users that have these roles can access the route
