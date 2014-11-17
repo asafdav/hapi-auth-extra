@@ -155,7 +155,7 @@ You must define your auth strategy before defining your routes, otherwise the ro
 * `roleHierarchy` - `Array`: The role hierarchy. Roles with a lower index in the array have access to all roles with a higher index in the array.
 		With the default roles, this means that `USER` has access to all roles restricted to `GUEST`,
 		  `ADMIN` has access to all roles restricted to `USER` and `GUEST`, and
-		  `SUPER_ADMIN` has access to all roles restricted to `ADMIN`, `USER`, and `GUEST.
+		  `SUPER_ADMIN` has access to all roles restricted to `ADMIN`, `USER`, and `GUEST`.
 
 
 ## Route config of supported parameters:
