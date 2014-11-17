@@ -136,6 +136,26 @@ describe('hapi-authorization', function() {
       });
     });
 
+		it('returns an error when a user with an invalid role tries to access a role protected route', function(done) {
+			var server = new Hapi.Server();
+			server.auth.scheme('custom', internals.authSchema);
+			server.auth.strategy('default', 'custom', true, {});
+
+			server.route({ method: 'GET', path: '/', config: {
+				auth: 'default',
+				plugins: {'hapiAuthorization': {role: 'ADMIN'}},
+				handler: function (request, reply) { reply("TEST");}
+			}});
+			server.pack.register(defaultPluginObject, {}, function(err) {
+				server.inject({method: 'GET', url: '/', credentials: {role: 'KING'}}, function(res) {
+					internals.asyncCheck(function() {
+						expect(res.statusCode).to.equal(401);
+						expect(res.result.message).to.equal("Unauthorized");
+					}, done);
+				});
+			});
+		});
+
     it('Allows access to protected method for a single role', function(done) {
       var server = new Hapi.Server();
       server.auth.scheme('custom', internals.authSchema);
