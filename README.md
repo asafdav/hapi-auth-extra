@@ -159,10 +159,10 @@ For example if you have the roles `["OWNER", "MANAGER", "EMPLOYEE"]`,
 You must define your auth strategy before defining your routes, otherwise the route validation will fail.
 
 ## Full list of supported parameters:
-* role - String: enforces that only users that have this role can access the route
-* roles - Array: enforces that only users that have these roles can access the route
-* aclQuery - Function: fetches an entity using the provided query, it allows the plugin to verify that the authenticated user has permissions to access this entity. the function signature should be function(parameter, cb).
-* aclQueryParam: String: The parameter key that will be used to fetch the entity. default: 'id'
-* paramSource: String: The source of the acl parameter, allowed values: payload, params, query.
-* validateEntityAcl: Boolean: Should the plugin validate if the user has access to the entity. if true, validateAclMethod is required. 
-* validateAclMethod: String: A function name. the plugin will invoke this method on the provided entity and will use it to verify that the user has permissions to access this entity. function signature is function(user, role, cb);
+* `role` - `String`: enforces that only users that have this role can access the route
+* `roles` - `Array`: enforces that only users that have these roles can access the route
+* `aclQuery` - `Function`: fetches an entity using the provided query, it allows the plugin to verify that the authenticated user has permissions to access this entity. the function signature should be `function(parameter, cb)`.
+* `aclQueryParam` - `String`: The parameter key that will be used to fetch the entity. default: 'id'
+* `paramSource` - `String`: The source of the acl parameter, allowed values: payload, params, query.
+* `validateEntityAcl` - `Boolean`: Should the plugin validate if the user has access to the entity. if true, validateAclMethod is required.
+* `validateAclMethod` - `String`: A function name. the plugin will invoke this method on the provided entity and will use it to verify that the user has permissions to access this entity. function signature is `function(user, role, cb)`;
