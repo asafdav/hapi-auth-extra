@@ -18,7 +18,7 @@ There are 2 ways to use hapi-authorization:
 1. With the default roles which are: "SUPER_ADMIN", "ADMIN", "USER", "GUEST"
 2. By defining your own roles
 
-## To use hapi-authorization
+## Using hapi-authorization with default roles
 1. Include the plugin in your hapijs app.
 Example:
 ```js
@@ -27,9 +27,26 @@ var plugins = [
 		plugin: require('hapi-auth-basic')
 	},
 	{
-	plugin: require('hapi-authorization'),
+		plugin: require('hapi-authorization')
+	}
+];
+
+server.pack.register(plugins, function(err) {
+...
+```
+
+## Using hapi-authorization with custom roles
+1. Include the plugin in your hapijs app.
+Example:
+```js
+var plugins = [
+	{
+		plugin: require('hapi-auth-basic')
+	},
+	{
+		plugin: require('hapi-authorization'),
 		options: {
-			roles: ['OWNER', 'MANAGER', 'EMPLOYEE']
+			roles: ['OWNER', 'MANAGER', 'EMPLOYEE']	// Can also reference a function which returns an array of roles
 		}
 	}
 ];
@@ -43,7 +60,7 @@ In order to activate the plugin for a specific route, add hapiAuthorization inst
 Example:
 
 **Authorize a single role**
-```javascript
+```js
 server.route({ method: 'GET', path: '/', config: {
   auth: true,
   plugins: {'hapiAuthorization': {role: 'ADMIN'}},
@@ -52,7 +69,7 @@ server.route({ method: 'GET', path: '/', config: {
 ```
 
 **Authorize multiple roles**
-```javascript
+```js
 server.route({ method: 'GET', path: '/', config: {
   auth: true,
   plugins: {'hapiAuthorization': {roles: ['USER', 'ADMIN']}},
@@ -60,7 +77,7 @@ server.route({ method: 'GET', path: '/', config: {
 }});
 ```
 
-**Note:** every route that uses hapiAuthorization must be protected by an authentication schema (auth: true).
+**Note:** Every route that uses hapiAuthorization must be protected by an authentication schema on the route itself (auth: '<someAuthStrategy>'). Currently can't just use `auth.strategy.default()`
 
 #### Examples
 
