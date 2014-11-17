@@ -144,21 +144,21 @@ server.pack.register(plugins, function(err) {
 
 ## Gotchas
 
-### Hierarchy
-The roles are hierarchical so with the defaults,
-"USER" has access to any routes that either "GUEST" or "USER" have access to,
-"ADMIN" has access to any routes that "ADMIN", "USER", or "GUEST" have access to, and
-"SUPER_ADMIN" has access to any routes that "SUPER_ADMIN", "ADMIN", "USER", or "GUEST" have access to.
-
-For custom roles, the hierarchy is the first roles have access to the later roles.
-For example if you have the roles `["OWNER", "MANAGER", "EMPLOYEE"]`,
-"MANAGER" has access to any routes that either "MANAGER", or "EMPLOYEE" have access to, and
-"OWNER" has access to any routes that either "OWNER", "MANAGER", or "EMPLOYEE" have access to.
-
 ### Auth before routes
 You must define your auth strategy before defining your routes, otherwise the route validation will fail.
 
-## Full list of supported parameters:
+
+## Plugin Config
+
+* `roles` 				- `Array`: All the possible roles. Defaults to `SUPER_ADMIN`, `ADMIN`, `USER`, `GUEST`
+* `hierarchy` 		- `Boolean`: An option to turn on or off hierarchy. Defaults to `false`
+* `roleHierarchy` - `Array`: The role hierarchy. Roles with a lower index in the array have access to all roles with a higher index in the array.
+		With the default roles, this means that `USER` has access to all roles restricted to `GUEST`,
+		  `ADMIN` has access to all roles restricted to `USER` and `GUEST`, and
+		  `SUPER_ADMIN` has access to all roles restricted to `ADMIN`, `USER`, and `GUEST.
+
+
+## Route config of supported parameters:
 * `role` - `String`: enforces that only users that have this role can access the route
 * `roles` - `Array`: enforces that only users that have these roles can access the route
 * `aclQuery` - `Function`: fetches an entity using the provided query, it allows the plugin to verify that the authenticated user has permissions to access this entity. the function signature should be `function(parameter, cb)`.

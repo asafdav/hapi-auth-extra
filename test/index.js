@@ -18,7 +18,8 @@ var customPluginObject = {
 	register: Plugin.register,
 	path: libpath,
 	options: {
-		roles: ['OWNER', 'MANAGER', 'EMPLOYEE']//,
+		roles: ['OWNER', 'MANAGER', 'EMPLOYEE'],
+		hierarchy: true//,
 		//roleHierarchy: ['OWNER', 'MANAGER', 'EMPLOYEE']
 	}
 };
@@ -645,6 +646,7 @@ describe('default acl validator', function() {
 				options: {
 					foo: 'TEST',
 					roles: ['EMPLOYEE', 'OWNER', 'MANAGER'],
+					hierarchy: true,
 					roleHierarchy: ['OWNER', 'MANAGER', 'EMPLOYEE']
 				}
 			};
@@ -674,6 +676,7 @@ describe('default acl validator', function() {
 				path: libpath,
 				options: {
 					roles: 'TEST',
+					hierarchy: true,
 					roleHierarchy: ['OWNER', 'MANAGER', 'EMPLOYEE']
 				}
 			};
@@ -703,6 +706,7 @@ describe('default acl validator', function() {
 				path: libpath,
 				options: {
 					roles: ['OWNER', 'MANAGER', 'EMPLOYEE'],
+					hierarchy: true,
 					roleHierarchy: 'Test'
 				}
 			};
@@ -711,6 +715,36 @@ describe('default acl validator', function() {
 				expect(err).to.not.be.undefined;
 				expect(err).to.be.instanceOf(Error);
 				expect(err.message).to.equal('Invalid plugin options (Invalid settings) ValidationError: roleHierarchy must be an array');
+				done();
+			});
+		});
+
+		it('Validates the hapi-authorization plugin option "hierarchy" must be a boolean', function(done) {
+			var server = new Hapi.Server(0);
+			server.auth.scheme('custom', internals.authSchema);
+			server.auth.strategy('default', 'custom', true, {});
+			server.route({ method: 'GET', path: '/', config: {
+				auth: 'default',
+				plugins: {'hapiAuthorization': {bla: 'USER'}},
+				handler: function (request, reply) { reply("TEST");}
+			}});
+
+			var plugin = {
+				name: 'hapiAuthorization',
+				version: '0.0.0',
+				register: Plugin.register,
+				path: libpath,
+				options: {
+					roles: ['OWNER', 'MANAGER', 'EMPLOYEE'],
+					hierarchy: 'TEST',
+					roleHierarchy: ['OWNER', 'MANAGER', 'EMPLOYEE']
+				}
+			};
+
+			server.pack.register(plugin, {}, function(err) {
+				expect(err).to.not.be.undefined;
+				expect(err).to.be.instanceOf(Error);
+				expect(err.message).to.equal('Invalid plugin options (Invalid settings) ValidationError: hierarchy must be a boolean');
 				done();
 			});
 		});
@@ -820,6 +854,111 @@ describe('default acl validator', function() {
 				});
 			});
 		});
+
+		it('Returns an error when a user\'s role is unsuited due to hierarchy being disabled', function(done) {
+			var server = new Hapi.Server();
+			server.auth.scheme('custom', internals.authSchema);
+			server.auth.strategy('default', 'custom', true, {});
+
+			server.route({ method: 'GET', path: '/', config: {
+				auth: 'default',
+				plugins: {'hapiAuthorization': {role: 'EMPLOYEE'}},
+				handler: function (request, reply) { reply("Authorized");}
+			}});
+
+			var plugin = {
+				name: 'hapiAuthorization',
+				version: '0.0.0',
+				register: Plugin.register,
+				path: libpath,
+				options: {
+					roles: ['OWNER', 'MANAGER', 'EMPLOYEE'],
+					hierarchy: false,
+					roleHierarchy: ['OWNER', 'MANAGER', 'EMPLOYEE']
+				}
+			};
+
+			server.pack.register(plugin, {}, function(err) {
+				server.inject({method: 'GET', url: '/', credentials: {role: 'MANAGER'}}, function(res) {
+					internals.asyncCheck(function() {
+
+						expect(res.statusCode).to.equal(401);
+						expect(res.result.message).to.equal("Unauthorized");
+					}, done);
+				});
+			});
+		});
+
+
+		it('Returns an error when a user\'s role is unsuited due to hierarchy being disabled', function(done) {
+			var server = new Hapi.Server();
+			server.auth.scheme('custom', internals.authSchema);
+			server.auth.strategy('default', 'custom', true, {});
+
+			server.route({ method: 'GET', path: '/', config: {
+				auth: 'default',
+				plugins: {'hapiAuthorization': {role: 'EMPLOYEE'}},
+				handler: function (request, reply) { reply("Authorized");}
+			}});
+
+			var plugin = {
+				name: 'hapiAuthorization',
+				version: '0.0.0',
+				register: Plugin.register,
+				path: libpath,
+				options: {
+					roles: ['OWNER', 'MANAGER', 'EMPLOYEE'],
+					hierarchy: false,
+					roleHierarchy: ['OWNER', 'MANAGER', 'EMPLOYEE']
+				}
+			};
+
+			server.pack.register(plugin, {}, function(err) {
+				server.inject({method: 'GET', url: '/', credentials: {role: 'OWNER'}}, function(res) {
+					internals.asyncCheck(function() {
+
+						expect(res.statusCode).to.equal(401);
+						expect(res.result.message).to.equal("Unauthorized");
+					}, done);
+				});
+			});
+		});
+
+
+		it.skip('Returns an error when any of a user\'s roles are unsuited due to hierarchy being disabled', function(done) {
+			var server = new Hapi.Server();
+			server.auth.scheme('custom', internals.authSchema);
+			server.auth.strategy('default', 'custom', true, {});
+
+			server.route({ method: 'GET', path: '/', config: {
+				auth: 'default',
+				plugins: {'hapiAuthorization': {role: 'EMPLOYEE'}},
+				handler: function (request, reply) { reply("Authorized");}
+			}});
+
+			var plugin = {
+				name: 'hapiAuthorization',
+				version: '0.0.0',
+				register: Plugin.register,
+				path: libpath,
+				options: {
+					roles: ['OWNER', 'MANAGER', 'EMPLOYEE'],
+					hierarchy: false,
+					roleHierarchy: ['OWNER', 'MANAGER', 'EMPLOYEE']
+				}
+			};
+
+			server.pack.register(plugin, {}, function(err) {
+				server.inject({method: 'GET', url: '/', credentials: {role: 'OWNER'}}, function(res) {
+					internals.asyncCheck(function() {
+
+						expect(res.statusCode).to.equal(401);
+						expect(res.result.message).to.equal("Unauthorized");
+					}, done);
+				});
+			});
+		});
+
 
 
 		it('Returns an error when specifying role (singular) with an array', function(done) {
