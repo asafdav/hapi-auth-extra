@@ -794,6 +794,26 @@ describe('default acl validator', function() {
 			});
 		});
 
+		it('returns an error when a user with a role that is not a valid role tries to access a role protected route', function(done) {
+			var server = new Hapi.Server();
+			server.auth.scheme('custom', internals.authSchema);
+			server.auth.strategy('default', 'custom', true, {});
+
+			server.route({ method: 'GET', path: '/', config: {
+				auth: 'default',
+				plugins: {'hapiAuthorization': {role: 'OWNER'}},
+				handler: function (request, reply) { reply("TEST");}
+			}});
+			server.pack.register(customPluginObject, {}, function(err) {
+				server.inject({method: 'GET', url: '/', credentials: {role: 'KING'}}, function(res) {
+					internals.asyncCheck(function() {
+						expect(res.statusCode).to.equal(401);
+						expect(res.result.message).to.equal("Unauthorized");
+					}, done);
+				});
+			});
+		});
+
 		it('Allows access to protected method for a single role', function(done) {
 			var server = new Hapi.Server();
 			server.auth.scheme('custom', internals.authSchema);
