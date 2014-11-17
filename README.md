@@ -159,7 +159,6 @@ For example if you have the roles `["OWNER", "MANAGER", "EMPLOYEE"]`,
 You must define your auth strategy before defining your routes, otherwise the route validation will fail.
 
 ## Full list of supported parameters:
---------------------
 * role - String: enforces that only users that have this role can access the route
 * roles - Array: enforces that only users that have these roles can access the route
 * aclQuery - Function: fetches an entity using the provided query, it allows the plugin to verify that the authenticated user has permissions to access this entity. the function signature should be function(parameter, cb).
