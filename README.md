@@ -62,7 +62,7 @@ Example:
 **Authorize a single role**
 ```js
 server.route({ method: 'GET', path: '/', config: {
-  auth: true,
+  auth: 'someAuthStrategy',
   plugins: {'hapiAuthorization': {role: 'ADMIN'}},
   handler: function (request, reply) { reply("Great!");}
 }});
@@ -71,13 +71,13 @@ server.route({ method: 'GET', path: '/', config: {
 **Authorize multiple roles**
 ```js
 server.route({ method: 'GET', path: '/', config: {
-  auth: true,
+  auth: 'someAuthStrategy',
   plugins: {'hapiAuthorization': {roles: ['USER', 'ADMIN']}},
   handler: function (request, reply) { reply("Great!");}
 }});
 ```
 
-**Note:** Every route that uses hapiAuthorization must be protected by an authentication schema on the route itself (auth: '<someAuthStrategy>'). Currently can't just use `auth.strategy.default()`
+**Note:** Every route that uses hapiAuthorization must be protected by an authentication schema on the route itself (auth: 'someAuthStrategy'). Currently can't just use `auth.strategy.default()`
 
 #### Examples
 
