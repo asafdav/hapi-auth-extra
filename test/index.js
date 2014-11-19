@@ -336,7 +336,7 @@ describe('hapi-authorization', function() {
       server.pack.register(defaultPluginObject, {}, function(err) {
         server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN'}}, function(res) {
           internals.asyncCheck(function() {
-            expect(res.statusCode).to.equal(500);
+            expect(res.statusCode).to.equal(400);
           }, done);
         });
       });
@@ -1121,7 +1121,7 @@ describe('default acl validator', function() {
 			server.pack.register(customPluginObject, {}, function(err) {
 				server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN'}}, function(res) {
 					internals.asyncCheck(function() {
-						expect(res.statusCode).to.equal(500);
+						expect(res.statusCode).to.equal(400);
 					}, done);
 				});
 			});
