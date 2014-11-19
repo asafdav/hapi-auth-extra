@@ -2,7 +2,7 @@
 
 > ACL support for hapijs apps
 
-[![Build Status](https://travis-ci.org/toymachiner62/hapi-authorization.svg)](https://travis-ci.org/toymachiner62/hapi-authorization)
+[![Build Status](https://travis-ci.org/toymachiner62/hapi-authorization.svg?branch=hapi8)](https://travis-ci.org/toymachiner62/hapi-authorization)
 
 You can use this plugin to add ACL and protect your routes. you can configure required roles and allow access to certain endpoints only to specific users.
 
