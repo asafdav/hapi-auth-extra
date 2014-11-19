@@ -41,12 +41,12 @@
     "underscore": "^1.7.0"
   },
   "devDependencies": {
-    "hapi": "^7.0.0",
+    "hapi": "^8.0.0",
     "chai": "^1.9.1",
     "jscoverage": "^0.5.0-rc2",
     "mocha": "^1.21.4"
   },
   "peerDependencies": {
-    "hapi": ">= 6 < 8"
+    "hapi": ">= 8"
   }
 }
