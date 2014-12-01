@@ -7,7 +7,7 @@
 You can use this plugin to add ACL and protect your routes. you can configure required roles and allow access to certain endpoints only to specific users.
 
 ### Support
-Hapi >= 8
+Hapi >= 6 < 8
 
 # Usage
 
@@ -150,7 +150,7 @@ You must define your auth strategy before defining your routes, otherwise the ro
 
 ## Plugin Config
 
-* `roles` 				- `Array`: All the possible roles. Defaults to `SUPER_ADMIN`, `ADMIN`, `USER`, `GUEST`
+* `roles` 				- `Array|false`: All the possible roles. Defaults to `SUPER_ADMIN`, `ADMIN`, `USER`, `GUEST`. Can be set to `false` if no hierarchy is being used. by setting to `false` you do not need to know all the potential roles
 * `hierarchy` 		- `Boolean`: An option to turn on or off hierarchy. Defaults to `false`
 * `roleHierarchy` - `Array`: The role hierarchy. Roles with a lower index in the array have access to all roles with a higher index in the array.
 		With the default roles, this means that `USER` has access to all roles restricted to `GUEST`,
