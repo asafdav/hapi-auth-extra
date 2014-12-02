@@ -35,7 +35,7 @@
   "homepage": "https://github.com/toymachiner62/hapi-authorization",
   "dependencies": {
     "boom": "^2.6.0",
-    "hoek": "^2.1.0",
+    "hoek": "^2.9.0",
     "joi": "^5.0.0",
     "q": "^1.0.1",
     "underscore": "^1.7.0"

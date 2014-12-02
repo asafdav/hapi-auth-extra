@@ -24,7 +24,7 @@ describe('hapi-authorization', function() {
 		server.connection();
 		server.route({ method: 'GET', path: '/', config: {
 			plugins: {'hapiAuthorization': {role: 'USER'}},
-			handler: function (request, reply) { reply("TEST");}
+			handler: function (request, reply) { reply.continue("TEST");}
 		}});
 		server.register(plugin, {}, function(err) {
 			server.start(function(err) {
@@ -44,7 +44,7 @@ describe('hapi-authorization', function() {
 		server.route({ method: 'GET', path: '/', config: {
 			auth: 'default',
 			plugins: {'hapiAuthorization': {role: 'USER'}},
-			handler: function (request, reply) { reply("TEST");}
+			handler: function (request, reply) { reply.continue("TEST");}
 		}});
 		server.register(plugin, {}, function(err) {
 			server.start(function(err) {
@@ -63,7 +63,7 @@ describe('hapi-authorization', function() {
 		server.route({ method: 'GET', path: '/', config: {
 			auth: 'default',
 			plugins: {'hapiAuthorization': {bla: 'USER'}},
-			handler: function (request, reply) { reply("TEST");}
+			handler: function (request, reply) { reply.continue("TEST");}
 		}});
 		server.register(plugin, {}, function(err) {
 			server.start(function(err) {
@@ -75,12 +75,18 @@ describe('hapi-authorization', function() {
 		});
 	});
 
-	it('ignores routes without hapi-authorization instructions', function(done) {
+	it.only('ignores routes without hapi-authorization instructions', function(done) {
 		var server = new Hapi.Server();
 		server.connection();
-		server.route({ method: 'GET', path: '/', handler: function (request, reply) { reply("TEST"); } });
+		server.route({ method: 'GET', path: '/', handler: function (request, reply) { reply.continue("TEST"); } });
 		server.register(plugin, {}, function(err) {
+
+			console.log('err = ');
+			console.log(err);
+
 			server.inject('/', function(res) {
+				//console.log(res);
+
 				expect(res.payload).to.equal("TEST");
 				done();
 			});
@@ -95,7 +101,7 @@ describe('hapi-authorization', function() {
 		server.route({ method: 'GET', path: '/', config: {
 			auth: 'default',
 			plugins: {'hapiAuthorization': {bla: 'USER'}},
-			handler: function (request, reply) { reply("TEST");}
+			handler: function (request, reply) { reply.continue("TEST");}
 		}});
 
 		var plugin = {
@@ -127,7 +133,7 @@ describe('hapi-authorization', function() {
 		server.route({ method: 'GET', path: '/', config: {
 			auth: 'default',
 			plugins: {'hapiAuthorization': {bla: 'USER'}},
-			handler: function (request, reply) { reply("TEST");}
+			handler: function (request, reply) { reply.continue("TEST");}
 		}});
 
 		var plugin = {
@@ -158,7 +164,7 @@ describe('hapi-authorization', function() {
 		server.route({ method: 'GET', path: '/', config: {
 			auth: 'default',
 			plugins: {'hapiAuthorization': {bla: 'USER'}},
-			handler: function (request, reply) { reply("TEST");}
+			handler: function (request, reply) { reply.continue("TEST");}
 		}});
 
 		var plugin = {
@@ -189,7 +195,7 @@ describe('hapi-authorization', function() {
 		server.route({ method: 'GET', path: '/', config: {
 			auth: 'default',
 			plugins: {'hapiAuthorization': {bla: 'USER'}},
-			handler: function (request, reply) { reply("TEST");}
+			handler: function (request, reply) { reply.continue("TEST");}
 		}});
 
 		var plugin = {
@@ -220,7 +226,7 @@ describe('hapi-authorization', function() {
 		server.route({ method: 'GET', path: '/', config: {
 			auth: 'default',
 			plugins: {'hapiAuthorization': {bla: 'USER'}},
-			handler: function (request, reply) { reply("TEST");}
+			handler: function (request, reply) { reply.continue("TEST");}
 		}});
 
 		var plugin = {
@@ -245,7 +251,7 @@ describe('hapi-authorization', function() {
 	 server.auth.default('default');
 	 server.route({ method: 'GET', path: '/', config: {
 	 plugins: {'hapiAuthorization': {role: 'USER'}},
-	 handler: function (request, reply) { reply("TEST");}
+	 handler: function (request, reply) { reply.continue("TEST");}
 	 }});
 	 server.register(defaultPluginObject, {}, function(err) {
 	 server.start(function(err) {
@@ -269,12 +275,12 @@ describe('hapi-authorization', function() {
 				server.route({ method: 'GET', path: '/', config: {
 					auth: 'default',
 					plugins: {'hapiAuthorization': {role: 'ADMIN'}},
-					handler: function (request, reply) { reply("TEST");}
+					handler: function (request, reply) { reply.continue("TEST");}
 				}});
 				server.register(plugin, {}, function(err) {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'USER'}}, function(res) {
 						internals.asyncCheck(function() {
-							expect(res.statusCode).to.equal(401);
+							expect(res.statusCode).to.equal(403);
 							expect(res.result.message).to.equal("Unauthorized");
 						}, done);
 					});
@@ -374,12 +380,12 @@ describe('hapi-authorization', function() {
 				server.route({ method: 'GET', path: '/', config: {
 					auth: 'default',
 					plugins: {'hapiAuthorization': {role: 'OWNER'}},
-					handler: function (request, reply) { reply("TEST");}
+					handler: function (request, reply) { reply.continue("TEST");}
 				}});
 				server.register(customPluginObject, {}, function(err) {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'EMPLOYEE'}}, function(res) {
 						internals.asyncCheck(function() {
-							expect(res.statusCode).to.equal(401);
+							expect(res.statusCode).to.equal(403);
 							expect(res.result.message).to.equal("Unauthorized");
 						}, done);
 					});
@@ -396,12 +402,12 @@ describe('hapi-authorization', function() {
 				server.route({ method: 'GET', path: '/', config: {
 					auth: 'default',
 					plugins: {'hapiAuthorization': {role: 'OWNER'}},
-					handler: function (request, reply) { reply("TEST");}
+					handler: function (request, reply) { reply.continue("TEST");}
 				}});
 				server.register(customPluginObject, {}, function(err) {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'KING'}}, function(res) {
 						internals.asyncCheck(function() {
-							expect(res.statusCode).to.equal(401);
+							expect(res.statusCode).to.equal(403);
 							expect(res.result.message).to.equal("Unauthorized");
 						}, done);
 					});
@@ -467,7 +473,7 @@ describe('hapi-authorization', function() {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'EMPLOYEE'}}, function(res) {
 						internals.asyncCheck(function() {
 
-							expect(res.statusCode).to.equal(401);
+							expect(res.statusCode).to.equal(403);
 							expect(res.result.message).to.equal("Unauthorized");
 						}, done);
 					});
@@ -503,7 +509,7 @@ describe('hapi-authorization', function() {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'MANAGER'}}, function(res) {
 						internals.asyncCheck(function() {
 
-							expect(res.statusCode).to.equal(401);
+							expect(res.statusCode).to.equal(403);
 							expect(res.result.message).to.equal("Unauthorized");
 						}, done);
 					});
@@ -539,7 +545,7 @@ describe('hapi-authorization', function() {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'OWNER'}}, function(res) {
 						internals.asyncCheck(function() {
 
-							expect(res.statusCode).to.equal(401);
+							expect(res.statusCode).to.equal(403);
 							expect(res.result.message).to.equal("Unauthorized");
 						}, done);
 					});
@@ -575,7 +581,7 @@ describe('hapi-authorization', function() {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'OWNER'}}, function(res) {
 						internals.asyncCheck(function() {
 
-							expect(res.statusCode).to.equal(401);
+							expect(res.statusCode).to.equal(403);
 							expect(res.result.message).to.equal("Unauthorized");
 						}, done);
 					});
@@ -809,7 +815,7 @@ describe('hapi-authorization', function() {
 				server.register(plugin, {}, function(err) {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN'}}, function(res) {
 						internals.asyncCheck(function() {
-							expect(res.statusCode).to.equal(401);
+							expect(res.statusCode).to.equal(403);
 						}, done);
 					});
 				});
@@ -892,7 +898,7 @@ describe('hapi-authorization', function() {
 				server.register(plugin, {}, function(err) {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN'}}, function(res) {
 						internals.asyncCheck(function() {
-							expect(res.statusCode).to.equal(401);
+							expect(res.statusCode).to.equal(403);
 							expect(res.result.message).to.equal("Unauthorized");
 						}, done);
 					});
@@ -918,7 +924,7 @@ describe('hapi-authorization', function() {
 				server.register(plugin, {}, function(err) {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN', _id: '2'}}, function(res) {
 						internals.asyncCheck(function() {
-							expect(res.statusCode).to.equal(401);
+							expect(res.statusCode).to.equal(403);
 							expect(res.result.message).to.equal("Unauthorized");
 						}, done);
 					});
@@ -1034,12 +1040,12 @@ describe('hapi-authorization', function() {
 				server.route({ method: 'GET', path: '/', config: {
 					auth: 'default',
 					plugins: {'hapiAuthorization': {role: 'ADMIN'}},
-					handler: function (request, reply) { reply("TEST");}
+					handler: function (request, reply) { reply.continue("TEST");}
 				}});
 				server.register(plugin, {}, function(err) {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'USER'}}, function(res) {
 						internals.asyncCheck(function() {
-							expect(res.statusCode).to.equal(401);
+							expect(res.statusCode).to.equal(403);
 							expect(res.result.message).to.equal("Unauthorized");
 						}, done);
 					});
@@ -1055,12 +1061,12 @@ describe('hapi-authorization', function() {
 				server.route({ method: 'GET', path: '/', config: {
 					auth: 'default',
 					plugins: {'hapiAuthorization': {role: 'ADMIN'}},
-					handler: function (request, reply) { reply("TEST");}
+					handler: function (request, reply) { reply.continue("TEST");}
 				}});
 				server.register(plugin, {}, function(err) {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'KING'}}, function(res) {
 						internals.asyncCheck(function() {
-							expect(res.statusCode).to.equal(401);
+							expect(res.statusCode).to.equal(403);
 							expect(res.result.message).to.equal("Unauthorized");
 						}, done);
 					});
@@ -1159,12 +1165,12 @@ describe('hapi-authorization', function() {
 				server.route({ method: 'GET', path: '/', config: {
 					auth: 'default',
 					plugins: {'hapiAuthorization': {role: 'OWNER'}},
-					handler: function (request, reply) { reply("TEST");}
+					handler: function (request, reply) { reply.continue("TEST");}
 				}});
 				server.register(plugin, {}, function(err) {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'EMPLOYEE'}}, function(res) {
 						internals.asyncCheck(function() {
-							expect(res.statusCode).to.equal(401);
+							expect(res.statusCode).to.equal(403);
 							expect(res.result.message).to.equal("Unauthorized");
 						}, done);
 					});
@@ -1180,12 +1186,12 @@ describe('hapi-authorization', function() {
 				server.route({ method: 'GET', path: '/', config: {
 					auth: 'default',
 					plugins: {'hapiAuthorization': {role: 'OWNER'}},
-					handler: function (request, reply) { reply("TEST");}
+					handler: function (request, reply) { reply.continue("TEST");}
 				}});
 				server.register(plugin, {}, function(err) {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'KING'}}, function(res) {
 						internals.asyncCheck(function() {
-							expect(res.statusCode).to.equal(401);
+							expect(res.statusCode).to.equal(403);
 							expect(res.result.message).to.equal("Unauthorized");
 						}, done);
 					});
@@ -1248,7 +1254,7 @@ describe('hapi-authorization', function() {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'EMPLOYEE'}}, function(res) {
 						internals.asyncCheck(function() {
 
-							expect(res.statusCode).to.equal(401);
+							expect(res.statusCode).to.equal(403);
 							expect(res.result.message).to.equal("Unauthorized");
 						}, done);
 					});
@@ -1284,7 +1290,7 @@ describe('hapi-authorization', function() {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'MANAGER'}}, function(res) {
 						internals.asyncCheck(function() {
 
-							expect(res.statusCode).to.equal(401);
+							expect(res.statusCode).to.equal(403);
 							expect(res.result.message).to.equal("Unauthorized");
 						}, done);
 					});
@@ -1320,7 +1326,7 @@ describe('hapi-authorization', function() {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'OWNER'}}, function(res) {
 						internals.asyncCheck(function() {
 
-							expect(res.statusCode).to.equal(401);
+							expect(res.statusCode).to.equal(403);
 							expect(res.result.message).to.equal("Unauthorized");
 						}, done);
 					});
@@ -1356,7 +1362,7 @@ describe('hapi-authorization', function() {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'OWNER'}}, function(res) {
 						internals.asyncCheck(function() {
 
-							expect(res.statusCode).to.equal(401);
+							expect(res.statusCode).to.equal(403);
 							expect(res.result.message).to.equal("Unauthorized");
 						}, done);
 					});
@@ -1585,7 +1591,7 @@ describe('hapi-authorization', function() {
 				server.register(plugin, {}, function(err) {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN'}}, function(res) {
 						internals.asyncCheck(function() {
-							expect(res.statusCode).to.equal(401);
+							expect(res.statusCode).to.equal(403);
 						}, done);
 					});
 				});
@@ -1666,7 +1672,7 @@ describe('hapi-authorization', function() {
 				server.register(plugin, {}, function(err) {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN'}}, function(res) {
 						internals.asyncCheck(function() {
-							expect(res.statusCode).to.equal(401);
+							expect(res.statusCode).to.equal(403);
 							expect(res.result.message).to.equal("Unauthorized");
 						}, done);
 					});
@@ -1692,7 +1698,7 @@ describe('hapi-authorization', function() {
 				server.register(plugin, {}, function(err) {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN', _id: '2'}}, function(res) {
 						internals.asyncCheck(function() {
-							expect(res.statusCode).to.equal(401);
+							expect(res.statusCode).to.equal(403);
 							expect(res.result.message).to.equal("Unauthorized");
 						}, done);
 					});
@@ -1807,12 +1813,12 @@ describe('hapi-authorization', function() {
 				server.route({ method: 'GET', path: '/', config: {
 					auth: 'default',
 					plugins: {'hapiAuthorization': {role: 'ADMIN'}},
-					handler: function (request, reply) { reply("TEST");}
+					handler: function (request, reply) { reply.continue("TEST");}
 				}});
 				server.register(plugin, {}, function(err) {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'USER'}}, function(res) {
 						internals.asyncCheck(function() {
-							expect(res.statusCode).to.equal(401);
+							expect(res.statusCode).to.equal(403);
 							expect(res.result.message).to.equal("Unauthorized");
 						}, done);
 					});
@@ -1828,12 +1834,12 @@ describe('hapi-authorization', function() {
 				server.route({ method: 'GET', path: '/', config: {
 					auth: 'default',
 					plugins: {'hapiAuthorization': {role: 'ADMIN'}},
-					handler: function (request, reply) { reply("TEST");}
+					handler: function (request, reply) { reply.continue("TEST");}
 				}});
 				server.register(plugin, {}, function(err) {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'KING'}}, function(res) {
 						internals.asyncCheck(function() {
-							expect(res.statusCode).to.equal(401);
+							expect(res.statusCode).to.equal(403);
 							expect(res.result.message).to.equal("Unauthorized");
 						}, done);
 					});
@@ -1932,12 +1938,12 @@ describe('hapi-authorization', function() {
 				server.route({ method: 'GET', path: '/', config: {
 					auth: 'default',
 					plugins: {'hapiAuthorization': {role: 'OWNER'}},
-					handler: function (request, reply) { reply("TEST");}
+					handler: function (request, reply) { reply.continue("TEST");}
 				}});
 				server.register(plugin, {}, function(err) {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'EMPLOYEE'}}, function(res) {
 						internals.asyncCheck(function() {
-							expect(res.statusCode).to.equal(401);
+							expect(res.statusCode).to.equal(403);
 							expect(res.result.message).to.equal("Unauthorized");
 						}, done);
 					});
@@ -1953,12 +1959,12 @@ describe('hapi-authorization', function() {
 				server.route({ method: 'GET', path: '/', config: {
 					auth: 'default',
 					plugins: {'hapiAuthorization': {role: 'OWNER'}},
-					handler: function (request, reply) { reply("TEST");}
+					handler: function (request, reply) { reply.continue("TEST");}
 				}});
 				server.register(plugin, {}, function(err) {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'KING'}}, function(res) {
 						internals.asyncCheck(function() {
-							expect(res.statusCode).to.equal(401);
+							expect(res.statusCode).to.equal(403);
 							expect(res.result.message).to.equal("Unauthorized");
 						}, done);
 					});
@@ -2021,7 +2027,7 @@ describe('hapi-authorization', function() {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'EMPLOYEE'}}, function(res) {
 						internals.asyncCheck(function() {
 
-							expect(res.statusCode).to.equal(401);
+							expect(res.statusCode).to.equal(403);
 							expect(res.result.message).to.equal("Unauthorized");
 						}, done);
 					});
@@ -2057,7 +2063,7 @@ describe('hapi-authorization', function() {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'MANAGER'}}, function(res) {
 						internals.asyncCheck(function() {
 
-							expect(res.statusCode).to.equal(401);
+							expect(res.statusCode).to.equal(403);
 							expect(res.result.message).to.equal("Unauthorized");
 						}, done);
 					});
@@ -2093,7 +2099,7 @@ describe('hapi-authorization', function() {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'OWNER'}}, function(res) {
 						internals.asyncCheck(function() {
 
-							expect(res.statusCode).to.equal(401);
+							expect(res.statusCode).to.equal(403);
 							expect(res.result.message).to.equal("Unauthorized");
 						}, done);
 					});
@@ -2129,7 +2135,7 @@ describe('hapi-authorization', function() {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'OWNER'}}, function(res) {
 						internals.asyncCheck(function() {
 
-							expect(res.statusCode).to.equal(401);
+							expect(res.statusCode).to.equal(403);
 							expect(res.result.message).to.equal("Unauthorized");
 						}, done);
 					});
@@ -2361,7 +2367,7 @@ describe('hapi-authorization', function() {
 				server.register(plugin, {}, function(err) {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN'}}, function(res) {
 						internals.asyncCheck(function() {
-							expect(res.statusCode).to.equal(401);
+							expect(res.statusCode).to.equal(403);
 						}, done);
 					});
 				});
@@ -2445,7 +2451,7 @@ describe('hapi-authorization', function() {
 				server.register(plugin, {}, function(err) {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN'}}, function(res) {
 						internals.asyncCheck(function() {
-							expect(res.statusCode).to.equal(401);
+							expect(res.statusCode).to.equal(403);
 							expect(res.result.message).to.equal("Unauthorized");
 						}, done);
 					});
@@ -2471,7 +2477,7 @@ describe('hapi-authorization', function() {
 				server.register(plugin, {}, function(err) {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN', _id: '2'}}, function(res) {
 						internals.asyncCheck(function() {
-							expect(res.statusCode).to.equal(401);
+							expect(res.statusCode).to.equal(403);
 							expect(res.result.message).to.equal("Unauthorized");
 						}, done);
 					});
@@ -2587,12 +2593,12 @@ describe('hapi-authorization', function() {
 				server.route({ method: 'GET', path: '/', config: {
 					auth: 'default',
 					plugins: {'hapiAuthorization': {role: 'ADMIN'}},
-					handler: function (request, reply) { reply("TEST");}
+					handler: function (request, reply) { reply.continue("TEST");}
 				}});
 				server.register(plugin, {}, function(err) {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'USER'}}, function(res) {
 						internals.asyncCheck(function() {
-							expect(res.statusCode).to.equal(401);
+							expect(res.statusCode).to.equal(403);
 							expect(res.result.message).to.equal("Unauthorized");
 						}, done);
 					});
@@ -2608,12 +2614,12 @@ describe('hapi-authorization', function() {
 				server.route({ method: 'GET', path: '/', config: {
 					auth: 'default',
 					plugins: {'hapiAuthorization': {role: 'ADMIN'}},
-					handler: function (request, reply) { reply("TEST");}
+					handler: function (request, reply) { reply.continue("TEST");}
 				}});
 				server.register(plugin, {}, function(err) {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'KING'}}, function(res) {
 						internals.asyncCheck(function() {
-							expect(res.statusCode).to.equal(401);
+							expect(res.statusCode).to.equal(403);
 							expect(res.result.message).to.equal("Unauthorized");
 						}, done);
 					});
@@ -2710,12 +2716,12 @@ describe('hapi-authorization', function() {
 				server.route({ method: 'GET', path: '/', config: {
 					auth: 'default',
 					plugins: {'hapiAuthorization': {role: 'OWNER'}},
-					handler: function (request, reply) { reply("TEST");}
+					handler: function (request, reply) { reply.continue("TEST");}
 				}});
 				server.register(plugin, {}, function(err) {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'EMPLOYEE'}}, function(res) {
 						internals.asyncCheck(function() {
-							expect(res.statusCode).to.equal(401);
+							expect(res.statusCode).to.equal(403);
 							expect(res.result.message).to.equal("Unauthorized");
 						}, done);
 					});
@@ -2730,12 +2736,12 @@ describe('hapi-authorization', function() {
 				server.route({ method: 'GET', path: '/', config: {
 					auth: 'default',
 					plugins: {'hapiAuthorization': {role: 'OWNER'}},
-					handler: function (request, reply) { reply("TEST");}
+					handler: function (request, reply) { reply.continue("TEST");}
 				}});
 				server.register(plugin, {}, function(err) {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'KING'}}, function(res) {
 						internals.asyncCheck(function() {
-							expect(res.statusCode).to.equal(401);
+							expect(res.statusCode).to.equal(403);
 							expect(res.result.message).to.equal("Unauthorized");
 						}, done);
 					});
@@ -2797,7 +2803,7 @@ describe('hapi-authorization', function() {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'EMPLOYEE'}}, function(res) {
 						internals.asyncCheck(function() {
 
-							expect(res.statusCode).to.equal(401);
+							expect(res.statusCode).to.equal(403);
 							expect(res.result.message).to.equal("Unauthorized");
 						}, done);
 					});
@@ -2832,7 +2838,7 @@ describe('hapi-authorization', function() {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'MANAGER'}}, function(res) {
 						internals.asyncCheck(function() {
 
-							expect(res.statusCode).to.equal(401);
+							expect(res.statusCode).to.equal(403);
 							expect(res.result.message).to.equal("Unauthorized");
 						}, done);
 					});
@@ -2868,7 +2874,7 @@ describe('hapi-authorization', function() {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'OWNER'}}, function(res) {
 						internals.asyncCheck(function() {
 
-							expect(res.statusCode).to.equal(401);
+							expect(res.statusCode).to.equal(403);
 							expect(res.result.message).to.equal("Unauthorized");
 						}, done);
 					});
@@ -2903,7 +2909,7 @@ describe('hapi-authorization', function() {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'OWNER'}}, function(res) {
 						internals.asyncCheck(function() {
 
-							expect(res.statusCode).to.equal(401);
+							expect(res.statusCode).to.equal(403);
 							expect(res.result.message).to.equal("Unauthorized");
 						}, done);
 					});
@@ -3131,7 +3137,7 @@ describe('hapi-authorization', function() {
 				server.register(plugin, {}, function(err) {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN'}}, function(res) {
 						internals.asyncCheck(function() {
-							expect(res.statusCode).to.equal(401);
+							expect(res.statusCode).to.equal(403);
 						}, done);
 					});
 				});
@@ -3215,7 +3221,7 @@ describe('hapi-authorization', function() {
 				server.register(plugin, {}, function(err) {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN'}}, function(res) {
 						internals.asyncCheck(function() {
-							expect(res.statusCode).to.equal(401);
+							expect(res.statusCode).to.equal(403);
 							expect(res.result.message).to.equal("Unauthorized");
 						}, done);
 					});
@@ -3241,7 +3247,7 @@ describe('hapi-authorization', function() {
 				server.register(plugin, {}, function(err) {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN', _id: '2'}}, function(res) {
 						internals.asyncCheck(function() {
-							expect(res.statusCode).to.equal(401);
+							expect(res.statusCode).to.equal(403);
 							expect(res.result.message).to.equal("Unauthorized");
 						}, done);
 					});
@@ -3357,12 +3363,12 @@ describe('hapi-authorization', function() {
 				server.route({ method: 'GET', path: '/', config: {
 					auth: 'default',
 					plugins: {'hapiAuthorization': {role: 'ADMIN'}},
-					handler: function (request, reply) { reply("TEST");}
+					handler: function (request, reply) { reply.continue("TEST");}
 				}});
 				server.register(plugin, {}, function(err) {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'USER'}}, function(res) {
 						internals.asyncCheck(function() {
-							expect(res.statusCode).to.equal(401);
+							expect(res.statusCode).to.equal(403);
 							expect(res.result.message).to.equal("Unauthorized");
 						}, done);
 					});
@@ -3378,12 +3384,12 @@ describe('hapi-authorization', function() {
 				server.route({ method: 'GET', path: '/', config: {
 					auth: 'default',
 					plugins: {'hapiAuthorization': {role: 'ADMIN'}},
-					handler: function (request, reply) { reply("TEST");}
+					handler: function (request, reply) { reply.continue("TEST");}
 				}});
 				server.register(plugin, {}, function(err) {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'KING'}}, function(res) {
 						internals.asyncCheck(function() {
-							expect(res.statusCode).to.equal(401);
+							expect(res.statusCode).to.equal(403);
 							expect(res.result.message).to.equal("Unauthorized");
 						}, done);
 					});
@@ -3482,12 +3488,12 @@ describe('hapi-authorization', function() {
 				server.route({ method: 'GET', path: '/', config: {
 					auth: 'default',
 					plugins: {'hapiAuthorization': {role: 'OWNER'}},
-					handler: function (request, reply) { reply("TEST");}
+					handler: function (request, reply) { reply.continue("TEST");}
 				}});
 				server.register(plugin, {}, function(err) {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'EMPLOYEE'}}, function(res) {
 						internals.asyncCheck(function() {
-							expect(res.statusCode).to.equal(401);
+							expect(res.statusCode).to.equal(403);
 							expect(res.result.message).to.equal("Unauthorized");
 						}, done);
 					});
@@ -3503,12 +3509,12 @@ describe('hapi-authorization', function() {
 				server.route({ method: 'GET', path: '/', config: {
 					auth: 'default',
 					plugins: {'hapiAuthorization': {role: 'OWNER'}},
-					handler: function (request, reply) { reply("TEST");}
+					handler: function (request, reply) { reply.continue("TEST");}
 				}});
 				server.register(plugin, {}, function(err) {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'KING'}}, function(res) {
 						internals.asyncCheck(function() {
-							expect(res.statusCode).to.equal(401);
+							expect(res.statusCode).to.equal(403);
 							expect(res.result.message).to.equal("Unauthorized");
 						}, done);
 					});
@@ -3571,7 +3577,7 @@ describe('hapi-authorization', function() {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'EMPLOYEE'}}, function(res) {
 						internals.asyncCheck(function() {
 
-							expect(res.statusCode).to.equal(401);
+							expect(res.statusCode).to.equal(403);
 							expect(res.result.message).to.equal("Unauthorized");
 						}, done);
 					});
@@ -3607,7 +3613,7 @@ describe('hapi-authorization', function() {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'MANAGER'}}, function(res) {
 						internals.asyncCheck(function() {
 
-							expect(res.statusCode).to.equal(401);
+							expect(res.statusCode).to.equal(403);
 							expect(res.result.message).to.equal("Unauthorized");
 						}, done);
 					});
@@ -3643,7 +3649,7 @@ describe('hapi-authorization', function() {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'OWNER'}}, function(res) {
 						internals.asyncCheck(function() {
 
-							expect(res.statusCode).to.equal(401);
+							expect(res.statusCode).to.equal(403);
 							expect(res.result.message).to.equal("Unauthorized");
 						}, done);
 					});
@@ -3679,7 +3685,7 @@ describe('hapi-authorization', function() {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'OWNER'}}, function(res) {
 						internals.asyncCheck(function() {
 
-							expect(res.statusCode).to.equal(401);
+							expect(res.statusCode).to.equal(403);
 							expect(res.result.message).to.equal("Unauthorized");
 						}, done);
 					});
@@ -3910,7 +3916,7 @@ describe('hapi-authorization', function() {
 				server.register(plugin, {}, function(err) {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN'}}, function(res) {
 						internals.asyncCheck(function() {
-							expect(res.statusCode).to.equal(401);
+							expect(res.statusCode).to.equal(403);
 						}, done);
 					});
 				});
@@ -3994,7 +4000,7 @@ describe('hapi-authorization', function() {
 				server.register(plugin, {}, function(err) {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN'}}, function(res) {
 						internals.asyncCheck(function() {
-							expect(res.statusCode).to.equal(401);
+							expect(res.statusCode).to.equal(403);
 							expect(res.result.message).to.equal("Unauthorized");
 						}, done);
 					});
@@ -4020,7 +4026,7 @@ describe('hapi-authorization', function() {
 				server.register(plugin, {}, function(err) {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN', _id: '2'}}, function(res) {
 						internals.asyncCheck(function() {
-							expect(res.statusCode).to.equal(401);
+							expect(res.statusCode).to.equal(403);
 							expect(res.result.message).to.equal("Unauthorized");
 						}, done);
 					});
@@ -4116,13 +4122,13 @@ internals.authSchema = function() {
 
 	var scheme = {
 		authenticate: function (request, reply) {
-			return reply(null, { username: "asafdav", role: 'USER'});
+			return reply.continue({ username: "asafdav", role: 'USER'});
 		},
-		payload: function (request, next) {
-			return next(request.auth.credentials.payload);
+		payload: function (request, reply) {
+			return reply.continue(request.auth.credentials.payload);
 		},
-		response: function (request, next) {
-			return next();
+		response: function (request, reply) {
+			return reply.continue();
 		}
 	};
 
