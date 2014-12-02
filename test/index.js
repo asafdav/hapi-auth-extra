@@ -24,7 +24,7 @@ describe('hapi-authorization', function() {
 		server.connection();
 		server.route({ method: 'GET', path: '/', config: {
 			plugins: {'hapiAuthorization': {role: 'USER'}},
-			handler: function (request, reply) { reply.continue("TEST");}
+			handler: function (request, reply) { reply("TEST");}
 		}});
 		server.register(plugin, {}, function(err) {
 			server.start(function(err) {
@@ -44,7 +44,7 @@ describe('hapi-authorization', function() {
 		server.route({ method: 'GET', path: '/', config: {
 			auth: 'default',
 			plugins: {'hapiAuthorization': {role: 'USER'}},
-			handler: function (request, reply) { reply.continue("TEST");}
+			handler: function (request, reply) { reply("TEST");}
 		}});
 		server.register(plugin, {}, function(err) {
 			server.start(function(err) {
@@ -63,7 +63,7 @@ describe('hapi-authorization', function() {
 		server.route({ method: 'GET', path: '/', config: {
 			auth: 'default',
 			plugins: {'hapiAuthorization': {bla: 'USER'}},
-			handler: function (request, reply) { reply.continue("TEST");}
+			handler: function (request, reply) { reply("TEST");}
 		}});
 		server.register(plugin, {}, function(err) {
 			server.start(function(err) {
@@ -75,10 +75,10 @@ describe('hapi-authorization', function() {
 		});
 	});
 
-	it.only('ignores routes without hapi-authorization instructions', function(done) {
+	it('ignores routes without hapi-authorization instructions', function(done) {
 		var server = new Hapi.Server();
 		server.connection();
-		server.route({ method: 'GET', path: '/', handler: function (request, reply) { reply.continue("TEST"); } });
+		server.route({ method: 'GET', path: '/', handler: function (request, reply) { reply("TEST"); } });
 		server.register(plugin, {}, function(err) {
 
 			console.log('err = ');
@@ -101,7 +101,7 @@ describe('hapi-authorization', function() {
 		server.route({ method: 'GET', path: '/', config: {
 			auth: 'default',
 			plugins: {'hapiAuthorization': {bla: 'USER'}},
-			handler: function (request, reply) { reply.continue("TEST");}
+			handler: function (request, reply) { reply("TEST");}
 		}});
 
 		var plugin = {
@@ -133,7 +133,7 @@ describe('hapi-authorization', function() {
 		server.route({ method: 'GET', path: '/', config: {
 			auth: 'default',
 			plugins: {'hapiAuthorization': {bla: 'USER'}},
-			handler: function (request, reply) { reply.continue("TEST");}
+			handler: function (request, reply) { reply("TEST");}
 		}});
 
 		var plugin = {
@@ -151,7 +151,7 @@ describe('hapi-authorization', function() {
 		server.register(plugin, {}, function(err) {
 			expect(err).to.not.be.undefined;
 			expect(err).to.be.instanceOf(Error);
-			expect(err.message).to.equal('Invalid plugin options (Invalid settings) ValidationError: roles must be an array');
+			expect(err.message).to.equal('Invalid plugin options (Invalid settings) ValidationError: roles must be an array roles must be a boolean');
 			done();
 		});
 	});
@@ -164,7 +164,7 @@ describe('hapi-authorization', function() {
 		server.route({ method: 'GET', path: '/', config: {
 			auth: 'default',
 			plugins: {'hapiAuthorization': {bla: 'USER'}},
-			handler: function (request, reply) { reply.continue("TEST");}
+			handler: function (request, reply) { reply("TEST");}
 		}});
 
 		var plugin = {
@@ -195,7 +195,7 @@ describe('hapi-authorization', function() {
 		server.route({ method: 'GET', path: '/', config: {
 			auth: 'default',
 			plugins: {'hapiAuthorization': {bla: 'USER'}},
-			handler: function (request, reply) { reply.continue("TEST");}
+			handler: function (request, reply) { reply("TEST");}
 		}});
 
 		var plugin = {
@@ -226,7 +226,7 @@ describe('hapi-authorization', function() {
 		server.route({ method: 'GET', path: '/', config: {
 			auth: 'default',
 			plugins: {'hapiAuthorization': {bla: 'USER'}},
-			handler: function (request, reply) { reply.continue("TEST");}
+			handler: function (request, reply) { reply("TEST");}
 		}});
 
 		var plugin = {
@@ -251,7 +251,7 @@ describe('hapi-authorization', function() {
 	 server.auth.default('default');
 	 server.route({ method: 'GET', path: '/', config: {
 	 plugins: {'hapiAuthorization': {role: 'USER'}},
-	 handler: function (request, reply) { reply.continue("TEST");}
+	 handler: function (request, reply) { reply("TEST");}
 	 }});
 	 server.register(defaultPluginObject, {}, function(err) {
 	 server.start(function(err) {
@@ -275,7 +275,7 @@ describe('hapi-authorization', function() {
 				server.route({ method: 'GET', path: '/', config: {
 					auth: 'default',
 					plugins: {'hapiAuthorization': {role: 'ADMIN'}},
-					handler: function (request, reply) { reply.continue("TEST");}
+					handler: function (request, reply) { reply("TEST");}
 				}});
 				server.register(plugin, {}, function(err) {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'USER'}}, function(res) {
@@ -380,7 +380,7 @@ describe('hapi-authorization', function() {
 				server.route({ method: 'GET', path: '/', config: {
 					auth: 'default',
 					plugins: {'hapiAuthorization': {role: 'OWNER'}},
-					handler: function (request, reply) { reply.continue("TEST");}
+					handler: function (request, reply) { reply("TEST");}
 				}});
 				server.register(customPluginObject, {}, function(err) {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'EMPLOYEE'}}, function(res) {
@@ -402,7 +402,7 @@ describe('hapi-authorization', function() {
 				server.route({ method: 'GET', path: '/', config: {
 					auth: 'default',
 					plugins: {'hapiAuthorization': {role: 'OWNER'}},
-					handler: function (request, reply) { reply.continue("TEST");}
+					handler: function (request, reply) { reply("TEST");}
 				}});
 				server.register(customPluginObject, {}, function(err) {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'KING'}}, function(res) {
@@ -1040,7 +1040,7 @@ describe('hapi-authorization', function() {
 				server.route({ method: 'GET', path: '/', config: {
 					auth: 'default',
 					plugins: {'hapiAuthorization': {role: 'ADMIN'}},
-					handler: function (request, reply) { reply.continue("TEST");}
+					handler: function (request, reply) { reply("TEST");}
 				}});
 				server.register(plugin, {}, function(err) {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'USER'}}, function(res) {
@@ -1061,7 +1061,7 @@ describe('hapi-authorization', function() {
 				server.route({ method: 'GET', path: '/', config: {
 					auth: 'default',
 					plugins: {'hapiAuthorization': {role: 'ADMIN'}},
-					handler: function (request, reply) { reply.continue("TEST");}
+					handler: function (request, reply) { reply("TEST");}
 				}});
 				server.register(plugin, {}, function(err) {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'KING'}}, function(res) {
@@ -1165,7 +1165,7 @@ describe('hapi-authorization', function() {
 				server.route({ method: 'GET', path: '/', config: {
 					auth: 'default',
 					plugins: {'hapiAuthorization': {role: 'OWNER'}},
-					handler: function (request, reply) { reply.continue("TEST");}
+					handler: function (request, reply) { reply("TEST");}
 				}});
 				server.register(plugin, {}, function(err) {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'EMPLOYEE'}}, function(res) {
@@ -1186,7 +1186,7 @@ describe('hapi-authorization', function() {
 				server.route({ method: 'GET', path: '/', config: {
 					auth: 'default',
 					plugins: {'hapiAuthorization': {role: 'OWNER'}},
-					handler: function (request, reply) { reply.continue("TEST");}
+					handler: function (request, reply) { reply("TEST");}
 				}});
 				server.register(plugin, {}, function(err) {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'KING'}}, function(res) {
@@ -1504,6 +1504,7 @@ describe('hapi-authorization', function() {
 
 			it('handles query errors', function(done) {
 				var server = new Hapi.Server();
+				server.connection();
 				server.auth.scheme('custom', internals.authSchema);
 				server.auth.strategy('default', 'custom', true, {});
 
@@ -1549,6 +1550,7 @@ describe('hapi-authorization', function() {
 
 			it('returns an error when the entity was not found', function(done) {
 				var server = new Hapi.Server();
+				server.connection();
 				server.auth.scheme('custom', internals.authSchema);
 				server.auth.strategy('default', 'custom', true, {});
 
@@ -1599,6 +1601,7 @@ describe('hapi-authorization', function() {
 
 			it('handles validator errors', function(done) {
 				var server = new Hapi.Server();
+				server.connection();
 				server.auth.scheme('custom', internals.authSchema);
 				server.auth.strategy('default', 'custom', true, {});
 
@@ -1656,6 +1659,7 @@ describe('hapi-authorization', function() {
 
 			it('returns error when the entity has no user field', function(done) {
 				var server = new Hapi.Server();
+				server.connection();
 				server.auth.scheme('custom', internals.authSchema);
 				server.auth.strategy('default', 'custom', true, {});
 
@@ -1707,6 +1711,7 @@ describe('hapi-authorization', function() {
 
 			it('returns the response for user with permissions', function(done) {
 				var server = new Hapi.Server();
+				server.connection();
 				server.auth.scheme('custom', internals.authSchema);
 				server.auth.strategy('default', 'custom', true, {});
 
@@ -1813,7 +1818,7 @@ describe('hapi-authorization', function() {
 				server.route({ method: 'GET', path: '/', config: {
 					auth: 'default',
 					plugins: {'hapiAuthorization': {role: 'ADMIN'}},
-					handler: function (request, reply) { reply.continue("TEST");}
+					handler: function (request, reply) { reply("TEST");}
 				}});
 				server.register(plugin, {}, function(err) {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'USER'}}, function(res) {
@@ -1834,7 +1839,7 @@ describe('hapi-authorization', function() {
 				server.route({ method: 'GET', path: '/', config: {
 					auth: 'default',
 					plugins: {'hapiAuthorization': {role: 'ADMIN'}},
-					handler: function (request, reply) { reply.continue("TEST");}
+					handler: function (request, reply) { reply("TEST");}
 				}});
 				server.register(plugin, {}, function(err) {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'KING'}}, function(res) {
@@ -1846,7 +1851,7 @@ describe('hapi-authorization', function() {
 				});
 			});
 
-			it('Allows access to protected method for multiple authorized roles', function(done) {
+			it('Restricts access to protected route for multiple authorized roles that are not defined as plugin roles', function(done) {
 				var server = new Hapi.Server();
 				server.connection();
 				server.auth.scheme('custom', internals.authSchema);
@@ -1860,7 +1865,9 @@ describe('hapi-authorization', function() {
 				server.register(plugin, {}, function(err) {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN'}}, function(res) {
 						internals.asyncCheck(function() {
-							expect(res.payload).to.equal('Authorized');
+							expect(res.statusCode).to.equal(403);
+							expect(res.result.message).to.equal("Unauthorized");
+							//expect(res.payload).to.equal('Authorized');
 						}, done);
 					});
 				});
@@ -1938,7 +1945,7 @@ describe('hapi-authorization', function() {
 				server.route({ method: 'GET', path: '/', config: {
 					auth: 'default',
 					plugins: {'hapiAuthorization': {role: 'OWNER'}},
-					handler: function (request, reply) { reply.continue("TEST");}
+					handler: function (request, reply) { reply("TEST");}
 				}});
 				server.register(plugin, {}, function(err) {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'EMPLOYEE'}}, function(res) {
@@ -1959,7 +1966,7 @@ describe('hapi-authorization', function() {
 				server.route({ method: 'GET', path: '/', config: {
 					auth: 'default',
 					plugins: {'hapiAuthorization': {role: 'OWNER'}},
-					handler: function (request, reply) { reply.continue("TEST");}
+					handler: function (request, reply) { reply("TEST");}
 				}});
 				server.register(plugin, {}, function(err) {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'KING'}}, function(res) {
@@ -2593,7 +2600,7 @@ describe('hapi-authorization', function() {
 				server.route({ method: 'GET', path: '/', config: {
 					auth: 'default',
 					plugins: {'hapiAuthorization': {role: 'ADMIN'}},
-					handler: function (request, reply) { reply.continue("TEST");}
+					handler: function (request, reply) { reply("TEST");}
 				}});
 				server.register(plugin, {}, function(err) {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'USER'}}, function(res) {
@@ -2614,7 +2621,7 @@ describe('hapi-authorization', function() {
 				server.route({ method: 'GET', path: '/', config: {
 					auth: 'default',
 					plugins: {'hapiAuthorization': {role: 'ADMIN'}},
-					handler: function (request, reply) { reply.continue("TEST");}
+					handler: function (request, reply) { reply("TEST");}
 				}});
 				server.register(plugin, {}, function(err) {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'KING'}}, function(res) {
@@ -2648,6 +2655,7 @@ describe('hapi-authorization', function() {
 
 			it('Returns an error when specifying role (singular) with an array', function(done) {
 				var server = new Hapi.Server();
+				server.connection();
 				server.auth.scheme('custom', internals.authSchema);
 				server.auth.strategy('default', 'custom', true, {});
 
@@ -2689,6 +2697,7 @@ describe('hapi-authorization', function() {
 
 			it('Returns an error when specifying both role and roles as options', function(done) {
 				var server = new Hapi.Server();
+				server.connection();
 				server.auth.scheme('custom', internals.authSchema);
 				server.auth.strategy('default', 'custom', true, {});
 
@@ -2716,7 +2725,7 @@ describe('hapi-authorization', function() {
 				server.route({ method: 'GET', path: '/', config: {
 					auth: 'default',
 					plugins: {'hapiAuthorization': {role: 'OWNER'}},
-					handler: function (request, reply) { reply.continue("TEST");}
+					handler: function (request, reply) { reply("TEST");}
 				}});
 				server.register(plugin, {}, function(err) {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'EMPLOYEE'}}, function(res) {
@@ -2730,13 +2739,14 @@ describe('hapi-authorization', function() {
 
 			it('returns an error when a user with a role that is not a valid role tries to access a role protected route', function(done) {
 				var server = new Hapi.Server();
+				server.connection();
 				server.auth.scheme('custom', internals.authSchema);
 				server.auth.strategy('default', 'custom', true, {});
 
 				server.route({ method: 'GET', path: '/', config: {
 					auth: 'default',
 					plugins: {'hapiAuthorization': {role: 'OWNER'}},
-					handler: function (request, reply) { reply.continue("TEST");}
+					handler: function (request, reply) { reply("TEST");}
 				}});
 				server.register(plugin, {}, function(err) {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'KING'}}, function(res) {
@@ -2771,6 +2781,7 @@ describe('hapi-authorization', function() {
 
 			it('Allows access to protected method for multiple authorized roles', function(done) {
 				var server = new Hapi.Server();
+				server.connection();
 				server.auth.scheme('custom', internals.authSchema);
 				server.auth.strategy('default', 'custom', true, {});
 
@@ -2939,6 +2950,7 @@ describe('hapi-authorization', function() {
 
 			it('Returns an error when specifying roles (plural) with a string', function(done) {
 				var server = new Hapi.Server();
+				server.connection();
 				server.auth.scheme('custom', internals.authSchema);
 				server.auth.strategy('default', 'custom', true, {});
 
@@ -2984,6 +2996,7 @@ describe('hapi-authorization', function() {
 
 			it('validates that the aclQuery parameter is a function', function(done) {
 				var server = new Hapi.Server();
+				server.connection();
 				server.auth.scheme('custom', internals.authSchema);
 				server.auth.strategy('default', 'custom', true, {});
 
@@ -3027,6 +3040,7 @@ describe('hapi-authorization', function() {
 
 			it('handles not found entities', function(done) {
 				var server = new Hapi.Server();
+				server.connection();
 				server.auth.scheme('custom', internals.authSchema);
 				server.auth.strategy('default', 'custom', true, {});
 
@@ -3363,7 +3377,7 @@ describe('hapi-authorization', function() {
 				server.route({ method: 'GET', path: '/', config: {
 					auth: 'default',
 					plugins: {'hapiAuthorization': {role: 'ADMIN'}},
-					handler: function (request, reply) { reply.continue("TEST");}
+					handler: function (request, reply) { reply("TEST");}
 				}});
 				server.register(plugin, {}, function(err) {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'USER'}}, function(res) {
@@ -3384,7 +3398,7 @@ describe('hapi-authorization', function() {
 				server.route({ method: 'GET', path: '/', config: {
 					auth: 'default',
 					plugins: {'hapiAuthorization': {role: 'ADMIN'}},
-					handler: function (request, reply) { reply.continue("TEST");}
+					handler: function (request, reply) { reply("TEST");}
 				}});
 				server.register(plugin, {}, function(err) {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'KING'}}, function(res) {
@@ -3396,7 +3410,7 @@ describe('hapi-authorization', function() {
 				});
 			});
 
-			it('Allows access to protected method for multiple authorized roles', function(done) {
+			it('Restricts access to protected route for multiple authorized roles that are not defined as plugin roles', function(done) {
 				var server = new Hapi.Server();
 				server.connection();
 				server.auth.scheme('custom', internals.authSchema);
@@ -3410,7 +3424,9 @@ describe('hapi-authorization', function() {
 				server.register(plugin, {}, function(err) {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN'}}, function(res) {
 						internals.asyncCheck(function() {
-							expect(res.payload).to.equal('Authorized');
+							//expect(res.payload).to.equal('Authorized');
+							expect(res.statusCode).to.equal(403);
+							expect(res.result.message).to.equal("Unauthorized");
 						}, done);
 					});
 				});
@@ -3488,7 +3504,7 @@ describe('hapi-authorization', function() {
 				server.route({ method: 'GET', path: '/', config: {
 					auth: 'default',
 					plugins: {'hapiAuthorization': {role: 'OWNER'}},
-					handler: function (request, reply) { reply.continue("TEST");}
+					handler: function (request, reply) { reply("TEST");}
 				}});
 				server.register(plugin, {}, function(err) {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'EMPLOYEE'}}, function(res) {
@@ -3509,7 +3525,7 @@ describe('hapi-authorization', function() {
 				server.route({ method: 'GET', path: '/', config: {
 					auth: 'default',
 					plugins: {'hapiAuthorization': {role: 'OWNER'}},
-					handler: function (request, reply) { reply.continue("TEST");}
+					handler: function (request, reply) { reply("TEST");}
 				}});
 				server.register(plugin, {}, function(err) {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'KING'}}, function(res) {
@@ -4122,13 +4138,13 @@ internals.authSchema = function() {
 
 	var scheme = {
 		authenticate: function (request, reply) {
-			return reply.continue({ username: "asafdav", role: 'USER'});
+			return reply({ username: "asafdav", role: 'USER'});
 		},
 		payload: function (request, reply) {
-			return reply.continue(request.auth.credentials.payload);
+			return reply(request.auth.credentials.payload);
 		},
 		response: function (request, reply) {
-			return reply.continue();
+			return reply();
 		}
 	};
 
