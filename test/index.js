@@ -55,6 +55,45 @@ describe('hapi-authorization', function() {
 		});
 	});
 
+	it('should allow hapi-authorization for routes secured globally', function(done) {
+		var server = new Hapi.Server(0);
+		server.connection();
+		server.auth.scheme('custom', internals.authSchema);
+		server.auth.strategy('default', 'custom', false, {});
+		server.auth.default('default');
+		server.route({ method: 'GET', path: '/', config: {
+			plugins: {'hapiAuthorization': {role: 'USER'}},
+			handler: function (request, reply) { reply("TEST");}
+		}});
+		server.register(plugin, {}, function(err) {
+			server.start(function(err) {
+				expect(err).to.be.undefined;
+				server.stop(); // Make sure the server is stopped
+				done();
+			});
+		});
+	});
+
+	it('should error with global auth set but auth false on route', function(done) {
+		var server = new Hapi.Server(0);
+		server.connection();
+		server.auth.scheme('custom', internals.authSchema);
+		server.auth.strategy('default', 'custom', false, {});
+		server.auth.default('default');
+		server.route({ method: 'GET', path: '/', config: {
+			auth: false,
+			plugins: {'hapiAuthorization': {role: 'USER'}},
+			handler: function (request, reply) { reply("TEST");}
+		}});
+		server.register(plugin, {}, function(err) {
+			server.start(function(err) {
+				expect(err).to.not.be.undefined;
+				server.stop(); // Make sure the server is stopped
+				done();
+			});
+		});
+	});
+
 	it('Validates the hapi-authorization routes parameters', function(done) {
 		var server = new Hapi.Server(0);
 		server.connection();
@@ -241,26 +280,6 @@ describe('hapi-authorization', function() {
 			done();
 		});
 	});
-
-	// TODO: Commented out for now since there is no way to get the server.auth.default() strategy currently.
-	// TODO: Awaiting resolution from https://github.com/hapijs/hapi/issues/2158
-	/*it.only('should allow hapi-authorization for routes secured globally', function(done) {
-	 var server = new Hapi.Server(0);
-	 server.auth.scheme('custom', internals.authSchema);
-	 server.auth.strategy('default', 'custom', false, {});
-	 server.auth.default('default');
-	 server.route({ method: 'GET', path: '/', config: {
-	 plugins: {'hapiAuthorization': {role: 'USER'}},
-	 handler: function (request, reply) { reply("TEST");}
-	 }});
-	 server.register(defaultPluginObject, {}, function(err) {
-	 server.start(function(err) {
-	 expect(err).to.be.undefined;
-	 server.stop(); // Make sure the server is stopped
-	 done();
-	 });
-	 });
-	 });*/
 
 	describe('Initialize with no options', function() {
 
