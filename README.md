@@ -32,7 +32,7 @@ var plugins = [
 	}
 ];
 
-server.pack.register(plugins, function(err) {
+server.register(plugins, function(err) {
 ...
 ```
 
@@ -52,7 +52,7 @@ var plugins = [
 	}
 ];
 
-server.pack.register(plugins, function(err) {
+server.register(plugins, function(err) {
 ...
 ```
 
@@ -63,7 +63,6 @@ Example:
 **Authorize a single role**
 ```js
 server.route({ method: 'GET', path: '/', config: {
-  auth: 'someAuthStrategy',
   plugins: {'hapiAuthorization': {role: 'ADMIN'}},	// Only ADMIN role
   handler: function (request, reply) { reply("Great!");}
 }});
@@ -72,13 +71,12 @@ server.route({ method: 'GET', path: '/', config: {
 **Authorize multiple roles**
 ```js
 server.route({ method: 'GET', path: '/', config: {
-  auth: 'someAuthStrategy',
   plugins: {'hapiAuthorization': {roles: ['USER', 'ADMIN']}},
   handler: function (request, reply) { reply("Great!");}
 }});
 ```
 
-**Note:** Every route that uses hapiAuthorization must be protected by an authentication schema on the route itself (auth: 'someAuthStrategy'). Currently can't just use `auth.strategy.default()`
+**Note:** Every route that uses hapiAuthorization must be protected by an authentication schema either via `auth.strategy.default('someAuthStrategy')` or by specifying the auth on the route itself.
 
 ## Full Example using hapi-auth-basic and hapi-authorization
 
@@ -87,7 +85,8 @@ var Hapi = require('hapi');
 var modules = require('./modules');
 
 // Instantiate the server
-var server = new Hapi.Server('0.0.0.0', 3000, {cors: true, debug: {request: ['error']}});
+var server = new Hapi.Server();
+server.connection();
 
 /**
  * The hapijs plugins that we want to use and their configs
@@ -112,7 +111,7 @@ var validate = function(username, password, callback) {
 /**
  * Setup the server with plugins
  */
-server.pack.register(plugins, function(err) {
+server.register(plugins, function(err) {
 
   // If there is an error on server startup
   if(err) {
