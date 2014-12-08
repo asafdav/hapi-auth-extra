@@ -25,10 +25,13 @@ Example:
 ```js
 var plugins = [
 	{
-		plugin: require('hapi-auth-basic')
+		register: require('hapi-auth-basic')
 	},
 	{
-		plugin: require('hapi-authorization')
+		register: require('hapi-authorization')
+		options: {
+		  roles: false	// By setting to false, you are not using an authorization hierarchy and you do not need to specify all the potential roles here
+		}
 	}
 ];
 
@@ -42,10 +45,10 @@ Example:
 ```js
 var plugins = [
 	{
-		plugin: require('hapi-auth-basic')
+		register: require('hapi-auth-basic')
 	},
 	{
-		plugin: require('hapi-authorization'),
+		register: require('hapi-authorization'),
 		options: {
 			roles: ['OWNER', 'MANAGER', 'EMPLOYEE']	// Can also reference a function which returns an array of roles
 		}
@@ -56,7 +59,8 @@ server.register(plugins, function(err) {
 ...
 ```
 
-In order to activate the plugin for a specific route, add hapiAuthorization instructions with the role(s) that should have access to the route configuration.
+#### Whitelist Routes That Require Authorization
+If you want no routes require authorization except for the ones you specify in the route config, add hapiAuthorization instructions with the role(s) that should have access to the route configuration.
 
 Example:
 
@@ -76,6 +80,40 @@ server.route({ method: 'GET', path: '/', config: {
 }});
 ```
 
+#### Blacklist All Routes To Require Authorization
+
+If you want all routes to require authorization except for the ones you specify that should not, add hapiAuthorization instructions with the role(s) that should have access to the server.connection options. Note that these can be overridden on each route individually as well.
+
+Example:
+
+```js
+var server = new Hapi.server();
+server.connection({
+	routes: {
+		plugins: {
+			hapiAuthorization: { roles: ['ADMIN'] }
+		}
+	}
+});
+```
+
+**Override the authorization to require alternate roles**
+```js
+server.route({ method: 'GET', path: '/', config: {
+  plugins: {'hapiAuthorization': {role: 'USER'}},	// Only USER role
+  handler: function (request, reply) { reply("Great!");}
+}});
+```
+
+**Override the authorization to not require any authorization**
+```js
+server.route({ method: 'GET', path: '/', config: {
+  plugins: {'hapiAuthorization': false},
+  handler: function (request, reply) { reply("Great!");}
+}});
+```
+
+
 **Note:** Every route that uses hapiAuthorization must be protected by an authentication schema either via `auth.strategy.default('someAuthStrategy')` or by specifying the auth on the route itself.
 
 ## Full Example using hapi-auth-basic and hapi-authorization
@@ -93,10 +131,10 @@ server.connection();
  */
 var plugins = [
 	{
-		plugin: require('hapi-auth-basic')
+		register: require('hapi-auth-basic')
 	},
 	{
-		plugin: require('hapi-authorization'),
+		register: require('hapi-authorization'),
 		options: {
 			roles: ['OWNER', 'MANAGER', 'EMPLOYEE']
 		}
