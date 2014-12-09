@@ -55,7 +55,7 @@ describe('hapi-authorization', function() {
 		});
 	});
 
-	it('should allow hapi-authorization for routes secured globally', function(done) {
+	it('should allow hapi-authorization for routes secured globally with authentication', function(done) {
 		var server = new Hapi.Server(0);
 		server.connection();
 		server.auth.scheme('custom', internals.authSchema);
@@ -68,6 +68,57 @@ describe('hapi-authorization', function() {
 		server.register(plugin, {}, function(err) {
 			server.start(function(err) {
 				expect(err).to.be.undefined;
+				server.stop(); // Make sure the server is stopped
+				done();
+			});
+		});
+	});
+
+	it('should allow hapi-authorization for routes secured globally with authentication and blacklisting routes to require authorization', function(done) {
+		var server = new Hapi.Server(0);
+		server.connection({
+			routes: {
+				plugins: {
+					hapiAuthorization: { roles: ['USER'] }
+				}
+			}
+		});
+		server.auth.scheme('custom', internals.authSchema);
+		server.auth.strategy('default', 'custom', false, {});
+		server.auth.default('default');
+		server.route({ method: 'GET', path: '/', config: {
+			//plugins: {'hapiAuthorization': {role: 'USER'}},
+			handler: function (request, reply) { reply("TEST");}
+		}});
+		server.register(plugin, {}, function(err) {
+			server.start(function(err) {
+				expect(err).to.be.undefined;
+				server.stop(); // Make sure the server is stopped
+				done();
+			});
+		});
+	});
+
+	it('should error with global authentication not set and blacklisting routes to require authorization', function(done) {
+		var server = new Hapi.Server(0);
+		server.connection({
+			routes: {
+				plugins: {
+					hapiAuthorization: { roles: ['USER'] }
+				}
+			}
+		});
+		//server.auth.scheme('custom', internals.authSchema);
+		//server.auth.strategy('default', 'custom', false, {});
+		//server.auth.default('default');
+		server.route({ method: 'GET', path: '/', config: {
+			//plugins: {'hapiAuthorization': {role: 'USER'}},
+			handler: function (request, reply) { reply("TEST");}
+		}});
+		server.register(plugin, {}, function(err) {
+			server.start(function(err) {
+				expect(err).to.not.be.undefined;
+				expect(err).to.match(/hapi-authorization can be enabled only for secured route/);
 				server.stop(); // Make sure the server is stopped
 				done();
 			});
