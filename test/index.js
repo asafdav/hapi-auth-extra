@@ -125,7 +125,7 @@ describe('hapi-authorization', function() {
 		});
 	});
 
-	/*it.only('should not error with global authentication set, blacklisting routes to require authorization, and disabling authentication and authorization for a specific route', function(done) {
+	it('should not error with global authentication set, blacklisting routes to require authorization, and disabling authentication and authorization for a specific route', function(done) {
 
 		var plugin = {
 			name: 'hapiAuthorization',
@@ -145,31 +145,29 @@ describe('hapi-authorization', function() {
 				}
 			}
 		});
+
 		server.auth.scheme('custom', internals.authSchema);
 		server.auth.strategy('default', 'custom', false, {});
 		server.auth.default('default');
+
 		server.route({ method: 'GET', path: '/', config: {
 			auth: false,
 			plugins: {'hapiAuthorization': false},
 			handler: function (request, reply) { reply("TEST");}
 		}});
+
 		server.register(plugin, {}, function(err) {
-			//server.start(function(err) {
 				server.inject({method: 'GET', url: '/'}, function(res) {
+					console.log('err = ');
 					console.log(err);
+					console.log('res = ');
 					console.log(res);
 					internals.asyncCheck(function() {
-						expect(res.statusCode).to.equal(403);
-						expect(res.result.message).to.equal("Unauthorized");
-
+						expect(res.statusCode).to.equal(200);
 					}, done);
 				});
-				//console.log(err);
-				//expect(err).to.be.undefined;
-				//expect(err).to.match(/hapi-authorization can be enabled only for secured route/);
-			//});
 		});
-	});*/
+	});
 
 	it('should error with global auth set but auth false on route', function(done) {
 		var server = new Hapi.Server(0);
