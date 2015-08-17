@@ -11,7 +11,7 @@ It includes:
 
 
 ### Support
-Hapi <= 5.*
+Hapi = 9.*
 
 How to use it:
 --------------
@@ -31,14 +31,14 @@ function validateToken(token, cb) {
 
 var server = Hapi.createServer(0);
 // Register the plugin
-server.pack.register('hapi-auth-extra', {
+server.register('hapi-auth-extra', {
   tokenAuth: {
     tokenValidator: validateToken // Set the custom validator 
   }
 }, function(err) {
 
   server.route({ method: 'GET', path: '/', config: {
-    auth: true, // Protect this route
+    auth: 'default', // Protect this route
     handler: function (request, reply) { reply("Authorized");}
   }});
 
@@ -55,7 +55,7 @@ In order to activate the plugin for a specific route, all you have to do is to a
 
 ```javascript
 server.route({ method: 'GET', path: '/', config: {
-  auth: true,
+  auth: 'default',
   plugins: {'hapiAuthExtra': {role: 'ADMIN'}},
   handler: function (request, reply) { reply("Great!");}
 }});
@@ -71,7 +71,7 @@ The following example makes sure that only admins will be able to create new pro
 
 ```javascript
 server.route({ method: 'POST', path: '/product', config: {
-  auth: true, // Protected route
+  auth: 'default', // Protected route
   plugins: {'hapiAuthExtra': {role: 'ADMIN'}}, // Only admin 
   handler: function (request, reply) { reply({title: 'New product'}).code(201);} 
 }});
@@ -83,7 +83,7 @@ The following example makes sure that only the video owner will be able to delet
 
 ```javascript
 server.route({ method: 'DELETE', path: '/video/{id}', config: {
-      auth: true, // Protected route
+      auth: 'default', // Protected route
       plugins: {'hapiAuthExtra': {
         validateEntityAcl: true, // Validate the entity ACL
         aclQuery: function(id, cb) { // This query is used to fetch the entitiy, by default auth-extra will verify the field _user.
