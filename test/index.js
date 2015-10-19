@@ -158,10 +158,6 @@ describe('hapi-authorization', function() {
 
 		server.register(plugin, {}, function(err) {
 				server.inject({method: 'GET', url: '/'}, function(res) {
-					console.log('err = ');
-					console.log(err);
-					console.log('res = ');
-					console.log(res);
 					internals.asyncCheck(function() {
 						expect(res.statusCode).to.equal(200);
 					}, done);
@@ -215,11 +211,7 @@ describe('hapi-authorization', function() {
 		server.route({ method: 'GET', path: '/', handler: function (request, reply) { reply("TEST"); } });
 		server.register(plugin, {}, function(err) {
 
-			console.log('err = ');
-			console.log(err);
-
 			server.inject('/', function(res) {
-				//console.log(res);
 
 				expect(res.payload).to.equal("TEST");
 				done();
@@ -594,8 +586,7 @@ describe('hapi-authorization', function() {
 				});
 			});
 
-			// TODO
-			it.skip('Returns an error when a user\'s role is unsuited due to hierarchy being disabled', function(done) {
+			it('Returns an error when a user\'s role is unsuited due to hierarchy being disabled', function(done) {
 				var server = new Hapi.Server();
 				server.connection();
 				server.auth.scheme('custom', internals.authSchema);
@@ -630,8 +621,7 @@ describe('hapi-authorization', function() {
 				});
 			});
 
-			// TODO
-			it.skip('Returns an error when a user\'s role is unsuited due to hierarchy being disabled', function(done) {
+			it('Returns an error when a user\'s role is unsuited due to hierarchy being disabled', function(done) {
 				var server = new Hapi.Server();
 				server.connection();
 				server.auth.scheme('custom', internals.authSchema);
@@ -666,8 +656,7 @@ describe('hapi-authorization', function() {
 				});
 			});
 
-			// TODO
-			it.skip('Returns an error when any of a user\'s roles are unsuited due to hierarchy being disabled', function(done) {
+			it('Returns an error when any of a user\'s roles are unsuited due to hierarchy being disabled', function(done) {
 				var server = new Hapi.Server();
 				server.connection();
 				server.auth.scheme('custom', internals.authSchema);
@@ -1375,8 +1364,7 @@ describe('hapi-authorization', function() {
 				});
 			});
 
-			// TODO
-			it.skip('Returns an error when a user\'s role is unsuited due to hierarchy being disabled', function(done) {
+			it('Returns an error when a user\'s role is unsuited due to hierarchy being disabled', function(done) {
 				var server = new Hapi.Server();
 				server.connection();
 				server.auth.scheme('custom', internals.authSchema);
@@ -1411,8 +1399,7 @@ describe('hapi-authorization', function() {
 				});
 			});
 
-			// TODO
-			it.skip('Returns an error when a user\'s role is unsuited due to hierarchy being disabled', function(done) {
+			it('Returns an error when a user\'s role is unsuited due to hierarchy being disabled', function(done) {
 				var server = new Hapi.Server();
 				server.connection();
 				server.auth.scheme('custom', internals.authSchema);
@@ -1447,8 +1434,7 @@ describe('hapi-authorization', function() {
 				});
 			});
 
-			// TODO
-			it.skip('Returns an error when any of a user\'s roles are unsuited due to hierarchy being disabled', function(done) {
+			it('Returns an error when any of a user\'s roles are unsuited due to hierarchy being disabled', function(done) {
 				var server = new Hapi.Server();
 				server.connection();
 				server.auth.scheme('custom', internals.authSchema);
@@ -2155,8 +2141,7 @@ describe('hapi-authorization', function() {
 				});
 			});
 
-			// TODO
-			it.skip('Returns an error when a user\'s role is unsuited due to hierarchy being disabled', function(done) {
+			it('Returns an error when a user\'s role is unsuited due to hierarchy being disabled', function(done) {
 				var server = new Hapi.Server();
 				server.connection();
 				server.auth.scheme('custom', internals.authSchema);
@@ -2191,8 +2176,7 @@ describe('hapi-authorization', function() {
 				});
 			});
 
-			// TODO
-			it.skip('Returns an error when a user\'s role is unsuited due to hierarchy being disabled', function(done) {
+			it('Returns an error when a user\'s role is unsuited due to hierarchy being disabled', function(done) {
 				var server = new Hapi.Server();
 				server.connection();
 				server.auth.scheme('custom', internals.authSchema);
@@ -2227,8 +2211,7 @@ describe('hapi-authorization', function() {
 				});
 			});
 
-			// TODO
-			it.skip('Returns an error when any of a user\'s roles are unsuited due to hierarchy being disabled', function(done) {
+			it('Returns an error when any of a user\'s roles are unsuited due to hierarchy being disabled', function(done) {
 				var server = new Hapi.Server();
 				server.connection();
 				server.auth.scheme('custom', internals.authSchema);
@@ -2970,8 +2953,7 @@ describe('hapi-authorization', function() {
 				});
 			});
 
-			// TODO
-			it.skip('Returns an error when a user\'s role is unsuited due to hierarchy being disabled', function(done) {
+			it('Returns an error when a user\'s role is unsuited due to hierarchy being disabled', function(done) {
 				var server = new Hapi.Server();
 				server.connection();
 				server.auth.scheme('custom', internals.authSchema);
@@ -3714,8 +3696,7 @@ describe('hapi-authorization', function() {
 				});
 			});
 
-			// TODO
-			it.skip('Returns an error when a user\'s role is unsuited due to hierarchy being disabled', function(done) {
+			it('Returns an error when a user\'s role is unsuited due to hierarchy being disabled', function(done) {
 				var server = new Hapi.Server();
 				server.connection();
 				server.auth.scheme('custom', internals.authSchema);
@@ -3750,8 +3731,7 @@ describe('hapi-authorization', function() {
 				});
 			});
 
-			// TODO
-			it.skip('Returns an error when a user\'s role is unsuited due to hierarchy being disabled', function(done) {
+			it('Returns an error when a user\'s role is unsuited due to hierarchy being disabled', function(done) {
 				var server = new Hapi.Server();
 				server.connection();
 				server.auth.scheme('custom', internals.authSchema);
@@ -3786,8 +3766,7 @@ describe('hapi-authorization', function() {
 				});
 			});
 
-			// TODO
-			it.skip('Returns an error when any of a user\'s roles are unsuited due to hierarchy being disabled', function(done) {
+			it('Returns an error when any of a user\'s roles are unsuited due to hierarchy being disabled', function(done) {
 				var server = new Hapi.Server();
 				server.connection();
 				server.auth.scheme('custom', internals.authSchema);
