@@ -10,6 +10,7 @@ var Plugin = require(libpath + '/index');
 // Declare internals
 var internals = {};
 
+function NOOP(){}
 
 describe('hapi-authorization', function() {
 
@@ -31,7 +32,7 @@ describe('hapi-authorization', function() {
 			server.start(function(err) {
 				expect(err).to.not.be.undefined;
 				expect(err).to.match(/hapi-authorization can be enabled only for secured route/);
-				server.stop(); // Make sure the server is stopped
+				server.stop(NOOP); // Make sure the server is stopped
 				done();
 			});
 		});
@@ -50,7 +51,7 @@ describe('hapi-authorization', function() {
 		server.register(plugin, {}, function(err) {
 			server.start(function(err) {
 				expect(err).to.be.undefined;
-				server.stop(); // Make sure the server is stopped
+				server.stop(NOOP); // Make sure the server is stopped
 				done();
 			});
 		});
@@ -69,7 +70,7 @@ describe('hapi-authorization', function() {
 		server.register(plugin, {}, function(err) {
 			server.start(function(err) {
 				expect(err).to.be.undefined;
-				server.stop(); // Make sure the server is stopped
+				server.stop(NOOP); // Make sure the server is stopped
 				done();
 			});
 		});
@@ -94,7 +95,7 @@ describe('hapi-authorization', function() {
 		server.register(plugin, {}, function(err) {
 			server.start(function(err) {
 				expect(err).to.be.undefined;
-				server.stop(); // Make sure the server is stopped
+				server.stop(NOOP); // Make sure the server is stopped
 				done();
 			});
 		});
@@ -120,7 +121,7 @@ describe('hapi-authorization', function() {
 			server.start(function(err) {
 				expect(err).to.not.be.undefined;
 				expect(err).to.match(/hapi-authorization can be enabled only for secured route/);
-				server.stop(); // Make sure the server is stopped
+				server.stop(NOOP); // Make sure the server is stopped
 				done();
 			});
 		});
@@ -180,7 +181,7 @@ describe('hapi-authorization', function() {
 		server.register(plugin, {}, function(err) {
 			server.start(function(err) {
 				expect(err).to.not.be.undefined;
-				server.stop(); // Make sure the server is stopped
+				server.stop(NOOP); // Make sure the server is stopped
 				done();
 			});
 		});
@@ -199,8 +200,8 @@ describe('hapi-authorization', function() {
 		server.register(plugin, {}, function(err) {
 			server.start(function(err) {
 				expect(err).to.not.be.undefined;
-				expect(err).to.match(/bla is not allowed/);
-				server.stop(); // Make sure the server is stopped
+				expect(err).to.match(/"bla" is not allowed/);
+				server.stop(NOOP); // Make sure the server is stopped
 				done();
 			});
 		});
@@ -247,7 +248,7 @@ describe('hapi-authorization', function() {
 		server.register(plugin, {}, function(err) {
 			expect(err).to.not.be.undefined;
 			expect(err).to.be.instanceOf(Error);
-			expect(err.message).to.equal('Invalid plugin options (Invalid settings) ValidationError: foo is not allowed');
+			expect(err.message).to.equal('Invalid plugin options (Invalid settings) ValidationError: "foo" is not allowed');
 			done();
 		});
 	});
@@ -278,7 +279,7 @@ describe('hapi-authorization', function() {
 		server.register(plugin, {}, function(err) {
 			expect(err).to.not.be.undefined;
 			expect(err).to.be.instanceOf(Error);
-			expect(err.message).to.equal('Invalid plugin options (Invalid settings) ValidationError: roles must be an array roles must be a boolean');
+			expect(err.message).to.equal('Invalid plugin options (Invalid settings) ValidationError: "roles" must be an array "roles" must be a boolean');
 			done();
 		});
 	});
@@ -309,7 +310,7 @@ describe('hapi-authorization', function() {
 		server.register(plugin, {}, function(err) {
 			expect(err).to.not.be.undefined;
 			expect(err).to.be.instanceOf(Error);
-			expect(err.message).to.equal('Invalid plugin options (Invalid settings) ValidationError: roleHierarchy must be an array');
+			expect(err.message).to.equal('Invalid plugin options (Invalid settings) ValidationError: "roleHierarchy" must be an array');
 			done();
 		});
 	});
@@ -340,7 +341,7 @@ describe('hapi-authorization', function() {
 		server.register(plugin, {}, function(err) {
 			expect(err).to.not.be.undefined;
 			expect(err).to.be.instanceOf(Error);
-			expect(err.message).to.equal('Invalid plugin options (Invalid settings) ValidationError: hierarchy must be a boolean');
+			expect(err.message).to.equal('Invalid plugin options (Invalid settings) ValidationError: "hierarchy" must be a boolean');
 			done();
 		});
 	});
@@ -429,7 +430,7 @@ describe('hapi-authorization', function() {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN'}}, function(res) {
 						internals.asyncCheck(function() {
 							expect(res.statusCode).to.equal(400);
-							expect(res.result.message).to.equal('Invalid route options (Invalid settings) ValidationError: role must be a string');
+							expect(res.result.message).to.equal('Invalid route options (Invalid settings) ValidationError: "role" must be a string');
 						}, done);
 					});
 				});
@@ -450,7 +451,7 @@ describe('hapi-authorization', function() {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN'}}, function(res) {
 						internals.asyncCheck(function() {
 							expect(res.statusCode).to.equal(400);
-							expect(res.result.message).to.equal('Invalid route options (Invalid settings) ValidationError: roles must be an array');
+							expect(res.result.message).to.equal('Invalid route options (Invalid settings) ValidationError: "roles" must be an array');
 						}, done);
 					});
 				});
@@ -471,7 +472,7 @@ describe('hapi-authorization', function() {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN'}}, function(res) {
 						internals.asyncCheck(function() {
 							expect(res.statusCode).to.equal(400);
-							expect(res.result.message).to.equal('Invalid route options (Invalid settings) ValidationError: role conflict with forbidden peer roles');
+							expect(res.result.message).to.equal('Invalid route options (Invalid settings) ValidationError: "role" conflict with forbidden peer "roles"');
 						}, done);
 					});
 				});
@@ -708,7 +709,7 @@ describe('hapi-authorization', function() {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN'}}, function(res) {
 						internals.asyncCheck(function() {
 							expect(res.statusCode).to.equal(400);
-							expect(res.result.message).to.equal('Invalid route options (Invalid settings) ValidationError: role must be a string');
+							expect(res.result.message).to.equal('Invalid route options (Invalid settings) ValidationError: "role" must be a string');
 						}, done);
 					});
 				});
@@ -730,7 +731,7 @@ describe('hapi-authorization', function() {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN'}}, function(res) {
 						internals.asyncCheck(function() {
 							expect(res.statusCode).to.equal(400);
-							expect(res.result.message).to.equal('Invalid route options (Invalid settings) ValidationError: roles must be an array');
+							expect(res.result.message).to.equal('Invalid route options (Invalid settings) ValidationError: "roles" must be an array');
 						}, done);
 					});
 				});
@@ -752,7 +753,7 @@ describe('hapi-authorization', function() {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN'}}, function(res) {
 						internals.asyncCheck(function() {
 							expect(res.statusCode).to.equal(400);
-							expect(res.result.message).to.equal('Invalid route options (Invalid settings) ValidationError: role conflict with forbidden peer roles');
+							expect(res.result.message).to.equal('Invalid route options (Invalid settings) ValidationError: "role" conflict with forbidden peer "roles"');
 						}, done);
 					});
 				});
@@ -777,7 +778,7 @@ describe('hapi-authorization', function() {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN'}}, function(res) {
 						internals.asyncCheck(function() {
 							expect(res.statusCode).to.equal(400)
-							expect(res.result.message).to.match(/aclQuery must be a Function/);
+							expect(res.result.message).to.match(/"aclQuery" must be a Function/);
 						}, done);
 					});
 				});
@@ -868,7 +869,7 @@ describe('hapi-authorization', function() {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN'}}, function(res) {
 						internals.asyncCheck(function() {
 							expect(res.statusCode).to.equal(400);
-							expect(res.result.message).to.match(/aclQuery is required/);
+							expect(res.result.message).to.match(/"aclQuery" is required/);
 						}, done);
 					});
 				});
@@ -1147,7 +1148,7 @@ describe('hapi-authorization', function() {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN', _id: '1'}}, function(res) {
 						internals.asyncCheck(function() {
 							expect(res.statusCode).to.equal(400);
-							expect(res.result.message).to.equal("child \"name\" fails because [name is required]");
+							expect(res.result.message).to.equal('child "name" fails because ["name" is required]');
 						}, done);
 					});
 				});
@@ -1215,7 +1216,7 @@ describe('hapi-authorization', function() {
 					server.inject({method: 'POST', url: '/', payload: {}, credentials: {role: 'ADMIN', _id: '1'}}, function(res) {
 						internals.asyncCheck(function() {
 							expect(res.statusCode).to.equal(400);
-							expect(res.result.message).to.equal("child \"name\" fails because [name is required]");
+							expect(res.result.message).to.equal('child "name" fails because ["name" is required]');
 						}, done);
 					});
 				});
@@ -1352,7 +1353,7 @@ describe('hapi-authorization', function() {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN'}}, function(res) {
 						internals.asyncCheck(function() {
 							expect(res.statusCode).to.equal(400);
-							expect(res.result.message).to.equal('Invalid route options (Invalid settings) ValidationError: role must be a string');
+							expect(res.result.message).to.equal('Invalid route options (Invalid settings) ValidationError: "role" must be a string');
 						}, done);
 					});
 				});
@@ -1373,7 +1374,7 @@ describe('hapi-authorization', function() {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN'}}, function(res) {
 						internals.asyncCheck(function() {
 							expect(res.statusCode).to.equal(400);
-							expect(res.result.message).to.equal('Invalid route options (Invalid settings) ValidationError: roles must be an array');
+							expect(res.result.message).to.equal('Invalid route options (Invalid settings) ValidationError: "roles" must be an array');
 						}, done);
 					});
 				});
@@ -1394,7 +1395,7 @@ describe('hapi-authorization', function() {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN'}}, function(res) {
 						internals.asyncCheck(function() {
 							expect(res.statusCode).to.equal(400);
-							expect(res.result.message).to.equal('Invalid route options (Invalid settings) ValidationError: role conflict with forbidden peer roles');
+							expect(res.result.message).to.equal('Invalid route options (Invalid settings) ValidationError: "role" conflict with forbidden peer "roles"');
 						}, done);
 					});
 				});
@@ -1625,7 +1626,7 @@ describe('hapi-authorization', function() {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN'}}, function(res) {
 						internals.asyncCheck(function() {
 							expect(res.statusCode).to.equal(400);
-							expect(res.result.message).to.equal('Invalid route options (Invalid settings) ValidationError: role must be a string');
+							expect(res.result.message).to.equal('Invalid route options (Invalid settings) ValidationError: "role" must be a string');
 						}, done);
 					});
 				});
@@ -1646,7 +1647,7 @@ describe('hapi-authorization', function() {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN'}}, function(res) {
 						internals.asyncCheck(function() {
 							expect(res.statusCode).to.equal(400);
-							expect(res.result.message).to.equal('Invalid route options (Invalid settings) ValidationError: roles must be an array');
+							expect(res.result.message).to.equal('Invalid route options (Invalid settings) ValidationError: "roles" must be an array');
 						}, done);
 					});
 				});
@@ -1667,7 +1668,7 @@ describe('hapi-authorization', function() {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN'}}, function(res) {
 						internals.asyncCheck(function() {
 							expect(res.statusCode).to.equal(400);
-							expect(res.result.message).to.equal('Invalid route options (Invalid settings) ValidationError: role conflict with forbidden peer roles');
+							expect(res.result.message).to.equal('Invalid route options (Invalid settings) ValidationError: "role" conflict with forbidden peer "roles"');
 						}, done);
 					});
 				});
@@ -1692,7 +1693,7 @@ describe('hapi-authorization', function() {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN'}}, function(res) {
 						internals.asyncCheck(function() {
 							expect(res.statusCode).to.equal(400)
-							expect(res.result.message).to.match(/aclQuery must be a Function/);
+							expect(res.result.message).to.match(/"aclQuery" must be a Function/);
 						}, done);
 					});
 				});
@@ -1783,7 +1784,7 @@ describe('hapi-authorization', function() {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN'}}, function(res) {
 						internals.asyncCheck(function() {
 							expect(res.statusCode).to.equal(400);
-							expect(res.result.message).to.match(/aclQuery is required/);
+							expect(res.result.message).to.match(/"aclQuery" is required/);
 						}, done);
 					});
 				});
@@ -2129,7 +2130,7 @@ describe('hapi-authorization', function() {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN'}}, function(res) {
 						internals.asyncCheck(function() {
 							expect(res.statusCode).to.equal(400);
-							expect(res.result.message).to.equal('Invalid route options (Invalid settings) ValidationError: role must be a string');
+							expect(res.result.message).to.equal('Invalid route options (Invalid settings) ValidationError: "role" must be a string');
 						}, done);
 					});
 				});
@@ -2150,7 +2151,7 @@ describe('hapi-authorization', function() {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN'}}, function(res) {
 						internals.asyncCheck(function() {
 							expect(res.statusCode).to.equal(400);
-							expect(res.result.message).to.equal('Invalid route options (Invalid settings) ValidationError: roles must be an array');
+							expect(res.result.message).to.equal('Invalid route options (Invalid settings) ValidationError: "roles" must be an array');
 						}, done);
 					});
 				});
@@ -2171,7 +2172,7 @@ describe('hapi-authorization', function() {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN'}}, function(res) {
 						internals.asyncCheck(function() {
 							expect(res.statusCode).to.equal(400);
-							expect(res.result.message).to.equal('Invalid route options (Invalid settings) ValidationError: role conflict with forbidden peer roles');
+							expect(res.result.message).to.equal('Invalid route options (Invalid settings) ValidationError: "role" conflict with forbidden peer "roles"');
 						}, done);
 					});
 				});
@@ -2402,7 +2403,7 @@ describe('hapi-authorization', function() {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN'}}, function(res) {
 						internals.asyncCheck(function() {
 							expect(res.statusCode).to.equal(400);
-							expect(res.result.message).to.equal('Invalid route options (Invalid settings) ValidationError: role must be a string');
+							expect(res.result.message).to.equal('Invalid route options (Invalid settings) ValidationError: "role" must be a string');
 						}, done);
 					});
 				});
@@ -2423,7 +2424,7 @@ describe('hapi-authorization', function() {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN'}}, function(res) {
 						internals.asyncCheck(function() {
 							expect(res.statusCode).to.equal(400);
-							expect(res.result.message).to.equal('Invalid route options (Invalid settings) ValidationError: roles must be an array');
+							expect(res.result.message).to.equal('Invalid route options (Invalid settings) ValidationError: "roles" must be an array');
 						}, done);
 					});
 				});
@@ -2444,7 +2445,7 @@ describe('hapi-authorization', function() {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN'}}, function(res) {
 						internals.asyncCheck(function() {
 							expect(res.statusCode).to.equal(400);
-							expect(res.result.message).to.equal('Invalid route options (Invalid settings) ValidationError: role conflict with forbidden peer roles');
+							expect(res.result.message).to.equal('Invalid route options (Invalid settings) ValidationError: "role" conflict with forbidden peer "roles"');
 						}, done);
 					});
 				});
@@ -2469,7 +2470,7 @@ describe('hapi-authorization', function() {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN'}}, function(res) {
 						internals.asyncCheck(function() {
 							expect(res.statusCode).to.equal(400)
-							expect(res.result.message).to.match(/aclQuery must be a Function/);
+							expect(res.result.message).to.match(/"aclQuery" must be a Function/);
 						}, done);
 					});
 				});
@@ -2561,7 +2562,7 @@ describe('hapi-authorization', function() {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN'}}, function(res) {
 						internals.asyncCheck(function() {
 							expect(res.statusCode).to.equal(400);
-							expect(res.result.message).to.match(/aclQuery is required/);
+							expect(res.result.message).to.match(/"aclQuery" is required/);
 						}, done);
 					});
 				});
@@ -2906,7 +2907,7 @@ describe('hapi-authorization', function() {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN'}}, function(res) {
 						internals.asyncCheck(function() {
 							expect(res.statusCode).to.equal(400);
-							expect(res.result.message).to.equal('Invalid route options (Invalid settings) ValidationError: role must be a string');
+							expect(res.result.message).to.equal('Invalid route options (Invalid settings) ValidationError: "role" must be a string');
 						}, done);
 					});
 				});
@@ -2927,7 +2928,7 @@ describe('hapi-authorization', function() {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN'}}, function(res) {
 						internals.asyncCheck(function() {
 							expect(res.statusCode).to.equal(400);
-							expect(res.result.message).to.equal('Invalid route options (Invalid settings) ValidationError: roles must be an array');
+							expect(res.result.message).to.equal('Invalid route options (Invalid settings) ValidationError: "roles" must be an array');
 						}, done);
 					});
 				});
@@ -2948,7 +2949,7 @@ describe('hapi-authorization', function() {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN'}}, function(res) {
 						internals.asyncCheck(function() {
 							expect(res.statusCode).to.equal(400);
-							expect(res.result.message).to.equal('Invalid route options (Invalid settings) ValidationError: role conflict with forbidden peer roles');
+							expect(res.result.message).to.equal('Invalid route options (Invalid settings) ValidationError: "role" conflict with forbidden peer "roles"');
 						}, done);
 					});
 				});
@@ -3179,7 +3180,7 @@ describe('hapi-authorization', function() {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN'}}, function(res) {
 						internals.asyncCheck(function() {
 							expect(res.statusCode).to.equal(400);
-							expect(res.result.message).to.equal('Invalid route options (Invalid settings) ValidationError: role must be a string');
+							expect(res.result.message).to.equal('Invalid route options (Invalid settings) ValidationError: "role" must be a string');
 						}, done);
 					});
 				});
@@ -3200,7 +3201,7 @@ describe('hapi-authorization', function() {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN'}}, function(res) {
 						internals.asyncCheck(function() {
 							expect(res.statusCode).to.equal(400);
-							expect(res.result.message).to.equal('Invalid route options (Invalid settings) ValidationError: roles must be an array');
+							expect(res.result.message).to.equal('Invalid route options (Invalid settings) ValidationError: "roles" must be an array');
 						}, done);
 					});
 				});
@@ -3221,7 +3222,7 @@ describe('hapi-authorization', function() {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN'}}, function(res) {
 						internals.asyncCheck(function() {
 							expect(res.statusCode).to.equal(400);
-							expect(res.result.message).to.equal('Invalid route options (Invalid settings) ValidationError: role conflict with forbidden peer roles');
+							expect(res.result.message).to.equal('Invalid route options (Invalid settings) ValidationError: "role" conflict with forbidden peer "roles"');
 						}, done);
 					});
 				});
@@ -3246,7 +3247,7 @@ describe('hapi-authorization', function() {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN'}}, function(res) {
 						internals.asyncCheck(function() {
 							expect(res.statusCode).to.equal(400)
-							expect(res.result.message).to.match(/aclQuery must be a Function/);
+							expect(res.result.message).to.match(/"aclQuery" must be a Function/);
 						}, done);
 					});
 				});
@@ -3337,7 +3338,7 @@ describe('hapi-authorization', function() {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN'}}, function(res) {
 						internals.asyncCheck(function() {
 							expect(res.statusCode).to.equal(400);
-							expect(res.result.message).to.match(/aclQuery is required/);
+							expect(res.result.message).to.match(/"aclQuery" is required/);
 						}, done);
 					});
 				});
@@ -3684,7 +3685,7 @@ describe('hapi-authorization', function() {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN'}}, function(res) {
 						internals.asyncCheck(function() {
 							expect(res.statusCode).to.equal(400);
-							expect(res.result.message).to.equal('Invalid route options (Invalid settings) ValidationError: role must be a string');
+							expect(res.result.message).to.equal('Invalid route options (Invalid settings) ValidationError: "role" must be a string');
 						}, done);
 					});
 				});
@@ -3705,7 +3706,7 @@ describe('hapi-authorization', function() {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN'}}, function(res) {
 						internals.asyncCheck(function() {
 							expect(res.statusCode).to.equal(400);
-							expect(res.result.message).to.equal('Invalid route options (Invalid settings) ValidationError: roles must be an array');
+							expect(res.result.message).to.equal('Invalid route options (Invalid settings) ValidationError: "roles" must be an array');
 						}, done);
 					});
 				});
@@ -3726,7 +3727,7 @@ describe('hapi-authorization', function() {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN'}}, function(res) {
 						internals.asyncCheck(function() {
 							expect(res.statusCode).to.equal(400);
-							expect(res.result.message).to.equal('Invalid route options (Invalid settings) ValidationError: role conflict with forbidden peer roles');
+							expect(res.result.message).to.equal('Invalid route options (Invalid settings) ValidationError: "role" conflict with forbidden peer "roles"');
 						}, done);
 					});
 				});
@@ -3957,7 +3958,7 @@ describe('hapi-authorization', function() {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN'}}, function(res) {
 						internals.asyncCheck(function() {
 							expect(res.statusCode).to.equal(400);
-							expect(res.result.message).to.equal('Invalid route options (Invalid settings) ValidationError: role must be a string');
+							expect(res.result.message).to.equal('Invalid route options (Invalid settings) ValidationError: "role" must be a string');
 						}, done);
 					});
 				});
@@ -3978,7 +3979,7 @@ describe('hapi-authorization', function() {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN'}}, function(res) {
 						internals.asyncCheck(function() {
 							expect(res.statusCode).to.equal(400);
-							expect(res.result.message).to.equal('Invalid route options (Invalid settings) ValidationError: roles must be an array');
+							expect(res.result.message).to.equal('Invalid route options (Invalid settings) ValidationError: "roles" must be an array');
 						}, done);
 					});
 				});
@@ -3999,7 +4000,7 @@ describe('hapi-authorization', function() {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN'}}, function(res) {
 						internals.asyncCheck(function() {
 							expect(res.statusCode).to.equal(400);
-							expect(res.result.message).to.equal('Invalid route options (Invalid settings) ValidationError: role conflict with forbidden peer roles');
+							expect(res.result.message).to.equal('Invalid route options (Invalid settings) ValidationError: "role" conflict with forbidden peer "roles"');
 						}, done);
 					});
 				});
@@ -4024,7 +4025,7 @@ describe('hapi-authorization', function() {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN'}}, function(res) {
 						internals.asyncCheck(function() {
 							expect(res.statusCode).to.equal(400)
-							expect(res.result.message).to.match(/aclQuery must be a Function/);
+							expect(res.result.message).to.match(/"aclQuery" must be a Function/);
 						}, done);
 					});
 				});
@@ -4115,7 +4116,7 @@ describe('hapi-authorization', function() {
 					server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN'}}, function(res) {
 						internals.asyncCheck(function() {
 							expect(res.statusCode).to.equal(400);
-							expect(res.result.message).to.match(/aclQuery is required/);
+							expect(res.result.message).to.match(/"aclQuery" is required/);
 						}, done);
 					});
 				});

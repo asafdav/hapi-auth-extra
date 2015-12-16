@@ -35,19 +35,19 @@
   },
   "homepage": "https://github.com/toymachiner62/hapi-authorization",
   "dependencies": {
-    "boom": "^2.6.0",
-    "hoek": "^2.9.0",
-    "joi": "^5.0.0",
+    "boom": "^3.0.0",
+    "hoek": "^3.0.4",
+    "joi": "^7.0.1",
     "q": "^1.0.1",
     "underscore": "^1.7.0"
   },
   "devDependencies": {
-    "chai": "^1.9.1",
+    "chai": "^3.4.1",
     "coveralls": "^2.11.6",
-    "hapi": "^8.0.0",
+    "hapi": "^11.1.2",
     "istanbul": "^0.4.1",
-    "jscoverage": "^0.5.0-rc2",
-    "mocha": "^1.21.4"
+    "jscoverage": "^0.6.0",
+    "mocha": "^2.3.4"
   },
   "peerDependencies": {
     "hapi": ">= 8"
