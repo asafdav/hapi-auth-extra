@@ -4,7 +4,8 @@
   "description": "ACL support for hapijs apps",
   "main": "index.js",
   "scripts": {
-    "test": "mocha test"
+    "test": "mocha test",
+    "coverage": "istanbul cover _mocha test; cat ./coverage/lcov.info | coveralls"
   },
   "repository": {
     "type": "git",
@@ -41,8 +42,10 @@
     "underscore": "^1.7.0"
   },
   "devDependencies": {
-    "hapi": "^8.0.0",
     "chai": "^1.9.1",
+    "coveralls": "^2.11.6",
+    "hapi": "^8.0.0",
+    "istanbul": "^0.4.1",
     "jscoverage": "^0.5.0-rc2",
     "mocha": "^1.21.4"
   },
