@@ -11,9 +11,9 @@
 You can use this plugin to add ACL and protect your routes. you can configure required roles and allow access to certain endpoints only to specific users.
 
 ### Support
-- `Hapi >= 6 < 8`		- Use version `1.x`
-- `Hapi >= 8 < 10`	- Use version `2.x`
-- `Hapi >= 10`			- Use version `3.x`
+- `Hapi >= 6 < 8`   - Use version `1.x`
+- `Hapi >= 8 < 10`  - Use version `2.x`
+- `Hapi >= 10`      - Use version `3.x`
 
 # Usage
 
