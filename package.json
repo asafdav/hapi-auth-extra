@@ -34,6 +34,9 @@
     "url": "https://github.com/toymachiner62/hapi-authorization/issues"
   },
   "homepage": "https://github.com/toymachiner62/hapi-authorization",
+  "engines": {
+    "node": ">=4.0.0"
+  },
   "dependencies": {
     "boom": "^3.0.0",
     "hoek": "^3.0.4",
