@@ -2,13 +2,17 @@
 
 > ACL support for hapijs apps
 
-[![Build Status](https://travis-ci.org/toymachiner62/hapi-authorization.svg?branch=master)](https://travis-ci.org/toymachiner62/hapi-authorization)
+[![npm version][npm-badge]][npm-url]
+[![Build Status][travis-badge]][travis-url]
+[![Coverage Status][coveralls-badge]][coveralls-url]
+[![Dev Dependencies][david-badge]][david-url]
+
 
 You can use this plugin to add ACL and protect your routes. you can configure required roles and allow access to certain endpoints only to specific users.
 
 ### Support
-Hapi >= 6 < 8	- Use version 1.x
-Hapi >= 8			- Use version 2.x
+- `Hapi >= 6 < 8`	- Use version `1.x`
+- `Hapi >= 8`		- Use version `2.x`
 
 # Usage
 
@@ -204,3 +208,13 @@ You must define your auth strategy before defining your routes, otherwise the ro
 * `paramSource` - `String`: The source of the acl parameter, allowed values: payload, params, query.
 * `validateEntityAcl` - `Boolean`: Should the plugin validate if the user has access to the entity. if true, validateAclMethod is required.
 * `validateAclMethod` - `String`: A function name. the plugin will invoke this method on the provided entity and will use it to verify that the user has permissions to access this entity. function signature is `function(user, role, cb)`;
+
+
+[npm-badge]: https://badge.fury.io/js/hapi-authorization.svg
+[npm-url]: https://badge.fury.io/js/hapi-authorization
+[travis-badge]: https://travis-ci.org/toymachiner62/hapi-authorization.svg?branch=master
+[travis-url]: https://travis-ci.org/toymachiner62/hapi-authorization
+[coveralls-badge]: https://coveralls.io/repos/toymachiner62/hapi-authorization/badge.svg?branch=master&service=github
+[coveralls-url]:  https://coveralls.io/github/toymachiner62/hapi-authorization?branch=master
+[david-badge]: https://david-dm.org/toymachiner62/hapi-authorization.svg
+[david-url]: https://david-dm.org/toymachiner62/hapi-authorization
