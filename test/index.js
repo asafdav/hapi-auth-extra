@@ -21,6 +21,25 @@ describe('hapi-authorization', function() {
 		path: libpath
 	};
 
+	it('does not interfere with handlers throwing exceptions', function(done) {
+		var server = new Hapi.Server();
+		server.connection();
+		server.auth.scheme('custom', internals.authSchema);
+		server.auth.strategy('default', 'custom', true, {});
+
+		server.route({ method: 'GET', path: '/', config: {
+			auth: 'default',
+			handler: function (request, reply) {throw new Error("ouch");}
+		}});
+		server.register(plugin, {}, function(err) {
+			server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN'}}, function(res) {
+				internals.asyncCheck(function() {
+					expect(res.statusCode).to.equal(500);
+				}, done);
+			});
+		});
+	});
+
 	it('makes sure that hapi-authorization can be enabled only for secured routes', function(done) {
 		var server = new Hapi.Server(0);
 		server.connection();
