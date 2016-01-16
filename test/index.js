@@ -24,18 +24,17 @@ describe('hapi-authorization', function() {
 	it('does not interfere with handlers throwing exceptions', function(done) {
 		var server = new Hapi.Server();
 		server.connection();
-		server.auth.scheme('custom', internals.authSchema);
-		server.auth.strategy('default', 'custom', true, {});
-
 		server.route({ method: 'GET', path: '/', config: {
-			auth: 'default',
-			handler: function (request, reply) {throw new Error("ouch");}
+			handler: function (request, reply) {throw new Error("uncaught exception test");}
 		}});
 		server.register(plugin, {}, function(err) {
-			server.inject({method: 'GET', url: '/', credentials: {role: 'ADMIN'}}, function(res) {
-				internals.asyncCheck(function() {
-					expect(res.statusCode).to.equal(500);
-				}, done);
+			server.start(function(err) {
+				server.inject({method: 'GET', url: '/'}, function(res) {
+					internals.asyncCheck(function() {
+						expect(res.statusCode).to.equal(500);
+						server.stop(NOOP);
+					}, done);
+				});
 			});
 		});
 	});
