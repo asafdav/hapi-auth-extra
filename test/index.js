@@ -17,13 +17,12 @@ describe('hapi-authorization', function() {
 	var plugin = {
 		name: 'hapiAuthorization',
 		version: '0.0.0',
-		register: Plugin.register,
+		register: Plugin.plugin.register,
 		path: libpath
 	};
 
 	it('does not interfere with handlers throwing exceptions', function(done) {
 		var server = new Hapi.Server();
-		server.connection();
 		server.route({ method: 'GET', path: '/', config: {
 			handler: function (request, reply) {throw new Error("uncaught exception test");}
 		}});
@@ -40,8 +39,7 @@ describe('hapi-authorization', function() {
 	});
 
 	it('makes sure that hapi-authorization can be enabled only for secured routes', function(done) {
-		var server = new Hapi.Server(0);
-		server.connection();
+		var server = new Hapi.Server();
 		server.route({ method: 'GET', path: '/', config: {
 			plugins: {'hapiAuthorization': {role: 'USER'}},
 			handler: function (request, reply) { reply("TEST");}

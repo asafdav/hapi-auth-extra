@@ -1,5 +1,7 @@
 # hapi-authorization
 
+*hapi-authorization 4 only supports hapi 17+ for hapi 16 please use hapi-authorization 3*
+
 > ACL support for hapijs apps
 
 [![npm version][npm-badge]][npm-url]
@@ -14,6 +16,7 @@ You can use this plugin to add ACL and protect your routes. you can configure re
 - `Hapi >= 6 < 8`   - Use version `1.x`
 - `Hapi >= 8 < 10`  - Use version `2.x`
 - `Hapi >= 10`      - Use version `3.x`
+- `Hapi >= 17`      - Use version `4.x`
 
 # Usage
 
@@ -30,18 +33,17 @@ Example:
 ```js
 var plugins = [
 	{
-		register: require('hapi-auth-basic')
+		plugin: require('hapi-auth-basic')
 	},
 	{
-		register: require('hapi-authorization')
+		plugin: require('hapi-authorization')
 		options: {
 		  roles: false	// By setting to false, you are not using an authorization hierarchy and you do not need to specify all the potential roles here
 		}
 	}
 ];
 
-server.register(plugins, function(err) {
-...
+await server.register(plugins);
 ```
 
 ## Using hapi-authorization with custom roles
@@ -50,18 +52,17 @@ Example:
 ```js
 var plugins = [
 	{
-		register: require('hapi-auth-basic')
+		plugin: require('hapi-auth-basic')
 	},
 	{
-		register: require('hapi-authorization'),
+		plugin: require('hapi-authorization'),
 		options: {
 			roles: ['OWNER', 'MANAGER', 'EMPLOYEE']	// Can also reference a function which returns an array of roles
 		}
 	}
 ];
 
-server.register(plugins, function(err) {
-...
+await server.register(plugins);
 ```
 
 #### Whitelist Routes That Require Authorization
@@ -92,8 +93,7 @@ If you want all routes to require authorization except for the ones you specify 
 Example:
 
 ```js
-var server = new Hapi.server();
-server.connection({
+var server = new Hapi.server({
 	routes: {
 		plugins: {
 			hapiAuthorization: { roles: ['ADMIN'] }
@@ -129,7 +129,6 @@ var modules = require('./modules');
 
 // Instantiate the server
 var server = new Hapi.Server();
-server.connection();
 
 /**
  * The hapijs plugins that we want to use and their configs
@@ -154,7 +153,8 @@ var validate = function(username, password, callback) {
 /**
  * Setup the server with plugins
  */
-server.register(plugins, function(err) {
+await server.register(plugins);
+server.start().then(err -> {
 
   // If there is an error on server startup
   if(err) {
