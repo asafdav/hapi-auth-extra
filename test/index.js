@@ -17,25 +17,30 @@ describe('hapi-authorization', function() {
 	var plugin = {
 		name: 'hapiAuthorization',
 		version: '0.0.0',
-		register: Plugin.plugin.register,
+		plugin: Plugin.plugin,
 		path: libpath
 	};
 
-	it('does not interfere with handlers throwing exceptions', function(done) {
+	it('does not interfere with handlers throwing exceptions', async (done) => {
 		var server = new Hapi.Server();
 		server.route({ method: 'GET', path: '/', config: {
 			handler: function (request, reply) {throw new Error("uncaught exception test");}
 		}});
-		server.register(plugin, {}, function(err) {
-			server.start(function(err) {
-				server.inject({method: 'GET', url: '/'}, function(res) {
-					internals.asyncCheck(function() {
-						expect(res.statusCode).to.equal(500);
-						server.stop(NOOP);
-					}, done);
-				});
-			});
-		});
+    console.log('zero')
+    await server.register(plugin, {});
+    
+    console.log(1)
+    server.start(function(err) {
+      console.log(2)
+      server.inject({method: 'GET', url: '/'}, function(res) {
+        console.log(3)
+        internals.asyncCheck(function() {
+          console.log(4)
+          expect(res.statusCode).to.equal(500);
+          server.stop(NOOP);
+        }, done);
+      });
+    });
 	});
 
 	it('makes sure that hapi-authorization can be enabled only for secured routes', function(done) {
