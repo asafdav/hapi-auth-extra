@@ -9,10 +9,10 @@
 [![Coverage Status][coveralls-badge]][coveralls-url]
 [![Dev Dependencies][david-badge]][david-url]
 
-
 You can use this plugin to add ACL and protect your routes. you can configure required roles and allow access to certain endpoints only to specific users.
 
 ### Support
+
 - `Hapi >= 6 < 8`   - Use version `1.x`
 - `Hapi >= 8 < 10`  - Use version `2.x`
 - `Hapi >= 10`      - Use version `3.x`
@@ -117,7 +117,6 @@ server.route({ method: 'GET', path: '/', options: {
   handler: (request, h) => { return "Great!"; }
 }});
 ```
-
 
 **Note:** Every route that uses hapiAuthorization must be protected by an authentication schema either via `auth.strategy.default('someAuthStrategy')` or by specifying the auth on the route itself.
 
