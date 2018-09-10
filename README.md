@@ -1,5 +1,7 @@
 # hapi-authorization
 
+*hapi-authorization 4 only supports hapi 17+ for hapi 16 please use hapi-authorization 3*
+
 > ACL support for hapijs apps
 
 [![npm version][npm-badge]][npm-url]
@@ -7,13 +9,14 @@
 [![Coverage Status][coveralls-badge]][coveralls-url]
 [![Dev Dependencies][david-badge]][david-url]
 
-
 You can use this plugin to add ACL and protect your routes. you can configure required roles and allow access to certain endpoints only to specific users.
 
 ### Support
+
 - `Hapi >= 6 < 8`   - Use version `1.x`
 - `Hapi >= 8 < 10`  - Use version `2.x`
 - `Hapi >= 10`      - Use version `3.x`
+- `Hapi >= 17`      - Use version `4.x`
 
 # Usage
 
@@ -28,40 +31,38 @@ There are 2 ways to use hapi-authorization:
 1. Include the plugin in your hapijs app.
 Example:
 ```js
-var plugins = [
+let plugins = [
 	{
-		register: require('hapi-auth-basic')
+		plugin: require('hapi-auth-basic')
 	},
 	{
-		register: require('hapi-authorization')
+		plugin: require('hapi-authorization')
 		options: {
 		  roles: false	// By setting to false, you are not using an authorization hierarchy and you do not need to specify all the potential roles here
 		}
 	}
 ];
 
-server.register(plugins, function(err) {
-...
+await server.register(plugins);
 ```
 
 ## Using hapi-authorization with custom roles
 1. Include the plugin in your hapijs app.
 Example:
 ```js
-var plugins = [
+let plugins = [
 	{
-		register: require('hapi-auth-basic')
+		plugin: require('hapi-auth-basic')
 	},
 	{
-		register: require('hapi-authorization'),
+		plugin: require('hapi-authorization'),
 		options: {
 			roles: ['OWNER', 'MANAGER', 'EMPLOYEE']	// Can also reference a function which returns an array of roles
 		}
 	}
 ];
 
-server.register(plugins, function(err) {
-...
+await server.register(plugins);
 ```
 
 #### Whitelist Routes That Require Authorization
@@ -71,17 +72,17 @@ Example:
 
 **Authorize a single role**
 ```js
-server.route({ method: 'GET', path: '/', config: {
+server.route({ method: 'GET', path: '/', options: {
   plugins: {'hapiAuthorization': {role: 'ADMIN'}},	// Only ADMIN role
-  handler: function (request, reply) { reply("Great!");}
+  handler: (request, h) => { return "Great!"; }
 }});
 ```
 
 **Authorize multiple roles**
 ```js
-server.route({ method: 'GET', path: '/', config: {
+server.route({ method: 'GET', path: '/', options: {
   plugins: {'hapiAuthorization': {roles: ['USER', 'ADMIN']}},
-  handler: function (request, reply) { reply("Great!");}
+  handler: (request, h) => { return "Great!"; }
 }});
 ```
 
@@ -92,8 +93,7 @@ If you want all routes to require authorization except for the ones you specify 
 Example:
 
 ```js
-var server = new Hapi.server();
-server.connection({
+let server = new Hapi.server({
 	routes: {
 		plugins: {
 			hapiAuthorization: { roles: ['ADMIN'] }
@@ -104,37 +104,35 @@ server.connection({
 
 **Override the authorization to require alternate roles**
 ```js
-server.route({ method: 'GET', path: '/', config: {
+server.route({ method: 'GET', path: '/', options: {
   plugins: {'hapiAuthorization': {role: 'USER'}},	// Only USER role
-  handler: function (request, reply) { reply("Great!");}
+  handler: (request, h) => { return "Great!" ;}
 }});
 ```
 
 **Override the authorization to not require any authorization**
 ```js
-server.route({ method: 'GET', path: '/', config: {
+server.route({ method: 'GET', path: '/', options: {
   plugins: {'hapiAuthorization': false},
-  handler: function (request, reply) { reply("Great!");}
+  handler: (request, h) => { return "Great!"; }
 }});
 ```
-
 
 **Note:** Every route that uses hapiAuthorization must be protected by an authentication schema either via `auth.strategy.default('someAuthStrategy')` or by specifying the auth on the route itself.
 
 ## Full Example using hapi-auth-basic and hapi-authorization
 
 ```js
-var Hapi = require('hapi');
-var modules = require('./modules');
+const Hapi = require('hapi');
+const modules = require('./modules');
 
 // Instantiate the server
-var server = new Hapi.Server();
-server.connection();
+let server = new Hapi.Server();
 
 /**
  * The hapijs plugins that we want to use and their configs
  */
-var plugins = [
+let plugins = [
 	{
 		register: require('hapi-auth-basic')
 	},
@@ -146,20 +144,16 @@ var plugins = [
 	}
 ];
 
-var validate = function(username, password, callback) {
-	// Perform authentication and callback with object that contains a role or an array of roles
-	callback(null, true, {username: username, role: 'EMPLOYEE'});
+let validate = (username, password) => {
+	// Perform authentication and respond with object that contains a role or an array of roles
+	return {username: username, role: 'EMPLOYEE'};
 }
 
 /**
  * Setup the server with plugins
  */
-server.register(plugins, function(err) {
-
-  // If there is an error on server startup
-  if(err) {
-    throw err;
-  }
+await server.register(plugins);
+server.start().then(() => {
 
 	server.auth.strategy('simple', 'basic', {validateFunc: validate});
 	server.auth.default('simple');
@@ -167,21 +161,24 @@ server.register(plugins, function(err) {
 	/**
 	 * Add all the modules within the modules folder
 	 */
-	for(var route in modules) {
+	for(let route in modules) {
 		server.route(modules[route]);
 	}
 
 	/**
 	 * Starts the server
 	 */
-	server.start(function (err) {
-
-		if(err) {
-			console.log(err);
-		}
-
-		console.log('Hapi server started @', server.info.uri);
-	});
+	server.start()
+        .then(() => {
+            console.log('Hapi server started @', server.info.uri);
+        })
+        .catch((err) => {
+            console.log(err);
+        });
+})
+.catch((err) => {
+  // If there is an error on server startup
+  throw err;
 });
 ```
 
@@ -204,11 +201,11 @@ You must define your auth strategy before defining your routes, otherwise the ro
 ## Route config of supported parameters:
 * `role` - `String`: enforces that only users that have this role can access the route
 * `roles` - `Array`: enforces that only users that have these roles can access the route
-* `aclQuery` - `Function`: fetches an entity using the provided query, it allows the plugin to verify that the authenticated user has permissions to access this entity. the function signature should be `function(parameter, request, cb)`.
+* `aclQuery` - `Function`: fetches an entity using the provided query, it allows the plugin to verify that the authenticated user has permissions to access this entity. the function signature should be `function(parameter, request)`.
 * `aclQueryParam` - `String`: The parameter key that will be used to fetch the entity. default: 'id'
 * `paramSource` - `String`: The source of the acl parameter, allowed values: payload, params, query.
 * `validateEntityAcl` - `Boolean`: Should the plugin validate if the user has access to the entity. if true, validateAclMethod is required.
-* `validateAclMethod` - `String`: A function name. the plugin will invoke this method on the provided entity and will use it to verify that the user has permissions to access this entity. function signature is `function(user, role, cb)`;
+* `validateAclMethod` - `String`: A function name. the plugin will invoke this method on the provided entity and will use it to verify that the user has permissions to access this entity. function signature is `function(user, role)`;
 
 
 [npm-badge]: https://badge.fury.io/js/hapi-authorization.svg
