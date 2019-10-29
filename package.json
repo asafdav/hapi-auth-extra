@@ -33,7 +33,7 @@
   },
   "devDependencies": {
     "chai": "^3.2.0",
-    "hapi": "^9.0.1",
+    "hapi": "^18.1.0",
     "jscoverage": "^0.6.0",
     "mocha": "^2.2.5"
   }
